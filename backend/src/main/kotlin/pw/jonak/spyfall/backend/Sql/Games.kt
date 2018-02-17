@@ -1,3 +1,5 @@
+package pw.jonak.spyfall.backend.Sql
+
 import org.jetbrains.exposed.sql.Table
 
 object Games: Table() {
@@ -8,12 +10,4 @@ object Games: Table() {
     val total_time = long("total_time").nullable()
     val time_start = long("time_started").nullable()
     val pause_time = long("pause_time").nullable()
-}
-
-object Players: Table() {
-    val id = integer("id").primaryKey().uniqueIndex().autoIncrement()
-    val game = (text("game") references Games.code).nullable()
-    val role = text("role").nullable()
-    val expires_at = long("expires_at")
-    val name = text("name")
 }

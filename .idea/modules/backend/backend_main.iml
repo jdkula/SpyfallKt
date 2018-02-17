@@ -33,9 +33,6 @@
       <sourceFolder url="file://$MODULE_DIR$/../../../backend/src/main/kotlin" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../backend/src/main/resources" type="java-resource" />
     </content>
-    <content url="file://$MODULE_DIR$/../../../common/src">
-      <sourceFolder url="file://$MODULE_DIR$/../../../common/src" isTestSource="false" />
-    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Gradle: io.ktor:ktor-websockets:0.9.1" level="project" />
@@ -48,6 +45,7 @@
     <orderEntry type="library" name="Gradle: org.jetbrains.exposed:exposed:0.9.1" level="project" />
     <orderEntry type="library" name="Gradle: ch.qos.logback:logback-classic:1.2.1" level="project" />
     <orderEntry type="library" name="Gradle: org.xerial:sqlite-jdbc:3.21.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.beust:klaxon:2.1.6" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.21" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:0.22.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-io:0.22.1" level="project" />

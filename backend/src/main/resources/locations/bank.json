@@ -1,0 +1,12 @@
+{
+  "id": "bank",
+  "roles": [
+    "armored car driver",
+    "manager",
+    "consultant",
+    "robber",
+    "security guard",
+    "teller",
+    "customer"
+  ]
+}

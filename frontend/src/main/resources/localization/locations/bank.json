@@ -1,0 +1,12 @@
+{
+  "name": "Bank",
+  "roles": {
+    "armored car driver": "Armored Car Driver",
+    "manager": "Manager",
+    "consultant": "Consultant",
+    "robber": "Bank Robber",
+    "security guard": "Security Guard",
+    "teller": "Teller",
+    "customer": "Customer"
+  }
+}
