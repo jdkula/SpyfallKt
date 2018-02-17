@@ -1,0 +1,3 @@
+rootProject.name = 'spyfall'
+include 'backend', 'frontend'
+
