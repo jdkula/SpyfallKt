@@ -22,9 +22,8 @@ fun main(args: Array<String>) {
             route("/user") {
                 get("new") {
                     try {
-                        val userId: Int = createUser(context.parameters["name"] ?: throw InvalidParameterException())
-
-                        call.respondText("${context.parameters} -> User created: $userId", ContentType.Text.Html)
+                        val userInfo: UserRegistrationInformation = createUser(context.parameters["name"] ?: throw InvalidParameterException())
+                        call.respondText("$userInfo", ContentType.Text.Plain)
                     } catch (ex: AbstractMethodError) {
                         call.respond(HttpStatusCode.InternalServerError, "DB Failure...")
                     } catch (ex: InvalidParameterException) {

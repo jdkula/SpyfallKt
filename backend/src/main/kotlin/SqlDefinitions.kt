@@ -1,18 +1,19 @@
 import org.jetbrains.exposed.sql.Table
 
 object Games: Table() {
-    val id = text("id").primaryKey().uniqueIndex()
-    val location = text("location")
-    val spy_player = integer("spy_player") references Players.id
-    val first_player = integer("first_player") references Players.id
-    val total_time = integer("total_time")
-    val time_start = integer("time_started")
-    val pause_time = integer("pause_time").nullable()
+    val code = text("code").primaryKey().uniqueIndex()
+    val location = text("location").nullable()
+    val spy_player = (integer("spy_player") references Players.id).nullable()
+    val first_player = (integer("first_player") references Players.id).nullable()
+    val total_time = long("total_time").nullable()
+    val time_start = long("time_started").nullable()
+    val pause_time = long("pause_time").nullable()
 }
 
 object Players: Table() {
     val id = integer("id").primaryKey().uniqueIndex().autoIncrement()
-    val last_game = text("last_game").nullable()
-    val expires_at = integer("expires_at")
+    val game = (text("game") references Games.code).nullable()
+    val role = text("role").nullable()
+    val expires_at = long("expires_at")
     val name = text("name")
 }

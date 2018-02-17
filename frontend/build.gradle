@@ -28,5 +28,9 @@ task copyResource(type: Copy) {
     into "${buildDir}/web"
 }
 
+sourceSets {
+    main.kotlin.srcDirs += project(':').file("common/src")
+}
+
 assemble.dependsOn assembleWeb
 assemble.dependsOn copyResource

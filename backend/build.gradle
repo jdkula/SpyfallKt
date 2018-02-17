@@ -9,7 +9,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "io.ktor:ktor-server-core:$ktor_version"
     compile "io.ktor:ktor-server-netty:$ktor_version"
-    compile "io.ktor:ktor-websockets:$ktor_version" 
+    compile "io.ktor:ktor-websockets:$ktor_version"
     compile "org.jetbrains.exposed:exposed:0.9.1"
     compile "ch.qos.logback:logback-classic:1.2.1"
     compile "org.xerial:sqlite-jdbc:3.21.0.1"
@@ -30,5 +30,9 @@ compileTestKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+}
+
+sourceSets {
+    main.kotlin.srcDirs += project(':').file("common/src")
 }
 mainClassName = "MainKt"
