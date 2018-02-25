@@ -1,11 +1,18 @@
 apply plugin: 'kotlin2js'
+apply plugin: 'kotlinx-serialization'
+apply plugin: 'kotlin-platform-js'
+
 repositories {
     jcenter()
 }
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
     compile "org.jetbrains.kotlinx:kotlinx-html-js:0.6.8"
+    compile "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:$serialization_version"
+    expectedBy project(':common')
 }
+
+
 task assembleWeb(type: Sync) {
     configurations.compile.each { File file ->
         from(zipTree(file.absolutePath), {
@@ -26,11 +33,6 @@ task assembleWeb(type: Sync) {
 task copyResource(type: Copy) {
     from "src/main/resources"
     into "${buildDir}/web"
-}
-task copyCommon(type: Copy) {
-    delete file('src/main/kotlin/common')
-    from project(':').file('common/src')
-    into file('src/main/kotlin/common')
 }
 assemble.dependsOn assembleWeb
 assemble.dependsOn copyResource

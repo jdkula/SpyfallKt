@@ -1,5 +1,8 @@
 package pw.jonak.spyfall.common
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Optional
+
 interface SpyfallMessage {
     val message_name: String
     val SENDER_SIDE: Side
@@ -13,56 +16,82 @@ enum class Side {
 
 const val SelfIsFirst = -1
 
+@Serializable
 class UserRequest(val user_name: String) : SpyfallMessage {
     override val message_name = "user_request"
     override val SENDER_SIDE = Side.CLIENT
 }
 
+@Serializable
 class UserRegistrationInformation(val user_id: Int, val user_name: String) : SpyfallMessage {
     override val message_name = "user_requested_information"
     override val SENDER_SIDE = Side.SERVER
 }
 
-class GameInformation(
-    val user_id: Int,
-    val game_code: String,
-    val user_names: List<String>,
-    val game_has_started: Boolean,
-    val start_time: Long?,
-    val pause_time: Long?,
-    val total_time: Long?,
-    val is_spy: Boolean?,
-    val first_player: Int?,
-    val location: String?,
-    val role: String?
+@Serializable
+data class GameInformation(
+        @Optional val user_id: Int? = null,
+        val game_code: String,
+        val user_names: List<String>,
+        val game_has_started: Boolean,
+        @Optional val start_time: Long? = null,
+        @Optional val pause_time: Long? = null,
+        @Optional val total_time: Long? = null,
+        @Optional val is_spy: Boolean? = null,
+        @Optional val first_player: Int? = null,
+        @Optional val location: String? = null,
+        @Optional val role: String? = null
 ) : SpyfallMessage {
     override val message_name = "game_information"
     override val SENDER_SIDE = Side.SERVER
 }
 
+@Serializable
 class JoinGameRequest(val user_id: Int, val user_name: String, val game_code: String) :
-    SpyfallMessage {
+        SpyfallMessage {
     override val message_name = "join_game_request"
     override val SENDER_SIDE = Side.CLIENT
 }
 
+@Serializable
 class LeaveGameRequest(val user_id: Int, val game_code: String) : SpyfallMessage {
     override val message_name = "leave_game_request"
     override val SENDER_SIDE = Side.CLIENT
 }
 
+@Serializable
 class StartGameRequest(val user_id: Int, val game_code: String) : SpyfallMessage {
     override val message_name = "start_game_request"
     override val SENDER_SIDE = Side.CLIENT
 }
 
+@Serializable
 class StopGameRequest(val user_id: Int, val game_code: String) : SpyfallMessage {
     override val message_name = "stop_game_request"
     override val SENDER_SIDE = Side.CLIENT
 }
 
-class MessageError(val request: SpyfallMessage, val reason: String) :
-    SpyfallMessage {
+@Serializable
+class MessageError(@Optional val request: SpyfallMessage? = null, val reason: String) :
+        SpyfallMessage {
     override val message_name = "message_error"
     override val SENDER_SIDE = Side.EITHER
 }
+
+@Serializable
+class ActionFailure(val reason: String) : SpyfallMessage {
+    override val message_name = "action_failure"
+    override val SENDER_SIDE = Side.EITHER
+}
+
+@Serializable
+open class StatusMessage(val status: String) : SpyfallMessage {
+    override val message_name = "status_message"
+    override val SENDER_SIDE = Side.EITHER
+}
+
+@Serializable
+class UserNotFound(val user_id: Int) : StatusMessage("User Not Found")
+
+@Serializable
+class GameNotFound(val game_id: String) : StatusMessage("Game Not Found")

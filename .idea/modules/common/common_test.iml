@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":common:test" external.linked.project.path="$MODULE_DIR$/../../../common" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.group="spyfall" external.system.module.type="sourceSet" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="kotlin-language" name="Kotlin">
+      <configuration version="3" platform="Common (experimental) " useProjectSettings="false">
+        <compilerSettings />
+        <compilerArguments>
+          <option name="destination" value="$MODULE_DIR$/../../../common/build/classes/kotlin/test" />
+          <option name="classpath" value="$MODULE_DIR$/../../../common/build/classes/java/main;C:/Users/jonak/Sync/Code/Kotlin/Spyfall/common/build/classes/kotlin/main;C:/Users/jonak/Sync/Code/Kotlin/Spyfall/common/build/resources/main;C:/Users/jonak/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-serialization-runtime-common/0.4.1/ff5d1c3060f2b5d7d92cd937c7b58353fc91018a/kotlinx-serialization-runtime-common-0.4.1.jar;C:/Users/jonak/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-common/1.2.21/dc734061367ee9d41d7d6b54d5ecc8dc92aafbbf/kotlin-stdlib-common-1.2.21.jar;C:/Users/jonak/Sync/Code/Kotlin/Spyfall/common/build/classes/kotlin/main" />
+          <option name="languageVersion" value="1.2" />
+          <option name="apiVersion" value="1.2" />
+          <option name="pluginOptions">
+            <array />
+          </option>
+          <option name="pluginClasspaths">
+            <array>
+              <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-gradle-serialization-plugin/0.4.1/45e8a99dff19a26fbf53a4b8ed858776c279a6f9/kotlinx-gradle-serialization-plugin-0.4.1.jar" />
+            </array>
+          </option>
+        </compilerArguments>
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+    <output-test url="file://$MODULE_DIR$/../../../common/out/test/classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../common/src/test">
+      <sourceFolder url="file://$MODULE_DIR$/../../../common/src/test/kotlin" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../common/src/test/resources" type="java-test-resource" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="common_main" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.4.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.2.21" level="project" />
+  </component>
+  <component name="TestModuleProperties" production-module="common_main" />
+</module>

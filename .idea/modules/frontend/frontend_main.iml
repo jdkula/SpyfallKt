@@ -3,11 +3,16 @@
   <component name="FacetManager">
     <facet type="kotlin-language" name="Kotlin">
       <configuration version="3" platform="JavaScript " useProjectSettings="false">
+        <implements>common_main</implements>
         <testOutputPath>$MODULE_DIR$/../../../frontend/build/classes/kotlin/test/frontend_test.js</testOutputPath>
-        <compilerSettings />
+        <compilerSettings>
+          <option name="additionalArguments" value="-Xmulti-platform" />
+        </compilerSettings>
         <compilerArguments>
           <option name="outputFile" value="$MODULE_DIR$/../../../frontend/build/classes/kotlin/main/frontend.js" />
           <option name="noStdlib" value="true" />
+          <option name="sourceMapPrefix" value="" />
+          <option name="sourceMapEmbedSources" value="inlining" />
           <option name="metaInfo" value="true" />
           <option name="target" value="v5" />
           <option name="main" value="call" />
@@ -17,7 +22,9 @@
             <array />
           </option>
           <option name="pluginClasspaths">
-            <array />
+            <array>
+              <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-gradle-serialization-plugin/0.4.1/45e8a99dff19a26fbf53a4b8ed858776c279a6f9/kotlinx-gradle-serialization-plugin-0.4.1.jar" />
+            </array>
           </option>
         </compilerArguments>
       </configuration>
@@ -33,6 +40,8 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-html-js:0.6.8" level="project" />
+    <orderEntry type="module" module-name="common_main" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.4.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-js:1.2.21" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-html-common:0.6.8" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.1.60" level="project" />
