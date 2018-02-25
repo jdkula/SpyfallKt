@@ -40,8 +40,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Gradle: io.ktor:ktor-websockets:0.9.1" level="project" />
     <orderEntry type="module" module-name="common_main" />
+    <orderEntry type="library" name="Gradle: io.ktor:ktor-websockets:0.9.1" level="project" />
     <orderEntry type="library" name="Gradle: io.ktor:ktor-server-netty:0.9.1" level="project" />
     <orderEntry type="library" name="Gradle: io.ktor:ktor-server-host-common:0.9.1" level="project" />
     <orderEntry type="library" name="Gradle: io.ktor:ktor-server-core:0.9.1" level="project" />

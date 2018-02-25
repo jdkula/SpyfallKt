@@ -158,7 +158,7 @@ object SqlHelper {
                                     )
                     val possibleRole = remainingRoles?.singleOrNull()
                     newRole = possibleRole ?: AllLocations[gameInfo.location!!]?.roles?.singleOrNull()
-                }
+                } // TODO: Refactor all this role-setting stuff into a different method.
 
                 Players.update({ Players.id eq userId }) {
                     it[game] = gameCode
@@ -215,24 +215,31 @@ object SqlHelper {
         }
     }
 
-    fun prunePlayers() {
+    fun prunePlayers(): Int {
         Database.connect(DATABASE_URL, DATABASE_DRIVER)
+        var numPruned = 0
         transaction(Connection.TRANSACTION_SERIALIZABLE, 2) {
+            numPruned = Players.select { Players.expires_at less Date().time }.count()
             Players.deleteWhere { Players.expires_at less Date().time }
         }
+        return numPruned
     }
 
-    fun pruneGames() {
+    fun pruneGames(): Int {
         Database.connect(DATABASE_URL, DATABASE_DRIVER)
 
+        var numPruned = 0
         transaction(Connection.TRANSACTION_SERIALIZABLE, 2) {
             Games.selectAll().forEach {
                 val playersInGame: Int = Players.select { Players.game eq it[Games.code] }.count()
                 if(playersInGame == 0) {
+                    numPruned += Games.select { Games.code eq it[Games.code] }.count()
                     Games.deleteWhere { Games.code eq it[Games.code] }
                 }
             }
         }
+
+        return numPruned
     }
 
     fun randomCode(): String {

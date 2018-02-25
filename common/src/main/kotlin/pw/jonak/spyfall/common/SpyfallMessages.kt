@@ -72,17 +72,23 @@ class StopGameRequest(val user_id: Int, val game_code: String) : SpyfallMessage 
 }
 
 @Serializable
-class MessageError(@Optional val request: SpyfallMessage? = null, val reason: String) :
+open class MessageError(@Optional val request: SpyfallMessage? = null, val reason: String) :
         SpyfallMessage {
     override val message_name = "message_error"
     override val SENDER_SIDE = Side.EITHER
 }
 
 @Serializable
-class ActionFailure(val reason: String) : SpyfallMessage {
+object InvalidParameters : MessageError(null, "invalid_parameters")
+
+@Serializable
+open class ActionFailure(val reason: String) : SpyfallMessage {
     override val message_name = "action_failure"
     override val SENDER_SIDE = Side.EITHER
 }
+
+@Serializable
+object GameNotCreatedError : ActionFailure("game_not_created")
 
 @Serializable
 open class StatusMessage(val status: String) : SpyfallMessage {
@@ -91,7 +97,13 @@ open class StatusMessage(val status: String) : SpyfallMessage {
 }
 
 @Serializable
-class UserNotFound(val user_id: Int) : StatusMessage("User Not Found")
+class UserNotFound(val user_id: Int) : StatusMessage("user_not_found")
 
 @Serializable
-class GameNotFound(val game_id: String) : StatusMessage("Game Not Found")
+class GameNotFound(val game_id: String) : StatusMessage("game_not_found")
+
+@Serializable
+class PruneOK(val num_pruned: Int) : StatusMessage("prune_ok")
+
+@Serializable
+object ServerShutdownOK : StatusMessage("server_shutdown_ok")

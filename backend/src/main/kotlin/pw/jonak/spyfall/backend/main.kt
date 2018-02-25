@@ -50,7 +50,7 @@ fun main(args: Array<String>) {
                  * Shuts down the server.
                  */
                 post("shutdown") {
-                    call.respondText(JSON.stringify(StatusMessage("Server Shutdown OK")), ContentType.Application.Json)
+                    call.respondText(JSON.stringify(ServerShutdownOK), ContentType.Application.Json)
                     System.exit(0)
                 }
             }
@@ -73,7 +73,7 @@ fun main(args: Array<String>) {
                     } catch (ex: AbstractMethodError) {
                         call.respondText(JSON.stringify(ActionFailure("DB Error")), ContentType.Application.Json, HttpStatusCode.InternalServerError)
                     } catch (ex: InvalidParameterException) {
-                        call.respondText(JSON.stringify(MessageError(null, "Invalid Parameters")), ContentType.Application.Json, HttpStatusCode.BadRequest)
+                        call.respondText(JSON.stringify(InvalidParameters), ContentType.Application.Json, HttpStatusCode.BadRequest)
                     }
                 }
 
@@ -91,7 +91,7 @@ fun main(args: Array<String>) {
                         val statusCode = if (userInfo.user_id == userId) HttpStatusCode.OK else HttpStatusCode.Created
                         call.respondText(JSON.stringify(userInfo), ContentType.Application.Json, statusCode)
                     } catch (ex: InvalidParameterException) {
-                        call.respondText(JSON.stringify(MessageError(null, "Invalid Parameters")), ContentType.Application.Json, HttpStatusCode.BadRequest)
+                        call.respondText(JSON.stringify(InvalidParameters), ContentType.Application.Json, HttpStatusCode.BadRequest)
                     }
                 }
 
@@ -109,7 +109,7 @@ fun main(args: Array<String>) {
                             call.respondText(JSON.stringify(UserNotFound(userId)), ContentType.Application.Json, HttpStatusCode.NotFound)
                         }
                     } catch (ex: InvalidParameterException) {
-                        call.respondText(JSON.stringify(MessageError(null, "Invalid Parameters")), ContentType.Application.Json, HttpStatusCode.BadRequest)
+                        call.respondText(JSON.stringify(InvalidParameters), ContentType.Application.Json, HttpStatusCode.BadRequest)
                     }
                 }
 
@@ -118,8 +118,8 @@ fun main(args: Array<String>) {
                  * Forces a prune of all expired users.
                  */
                 delete("prune") {
-                    prunePlayers()
-                    call.respondText(JSON.stringify(StatusMessage("Prune OK")), ContentType.Application.Json)
+                    val numPruned = prunePlayers()
+                    call.respondText(JSON.stringify(PruneOK(numPruned)), ContentType.Application.Json)
                 }
             }
 
@@ -146,7 +146,7 @@ fun main(args: Array<String>) {
                             call.respondText(JSON.stringify(gameInfo), ContentType.Application.Json)
                         }
                     } catch (ex: InvalidParameterException) {
-                        call.respondText(JSON.stringify(MessageError(null, "Invalid Parameters")), ContentType.Application.Json, HttpStatusCode.BadRequest)
+                        call.respondText(JSON.stringify(InvalidParameters), ContentType.Application.Json, HttpStatusCode.BadRequest)
                     }
                 }
 
@@ -161,7 +161,7 @@ fun main(args: Array<String>) {
                         val gameInformation = getGameInfo(gameCode) ?: throw InvalidStateException("")
                         call.respondText(JSON.stringify(gameInformation), ContentType.Application.Json, HttpStatusCode.Created)
                     } catch (ex: InvalidStateException) {
-                        call.respondText(JSON.stringify(ActionFailure("Game Not Created")), ContentType.Application.Json, HttpStatusCode.InternalServerError)
+                        call.respondText(JSON.stringify(GameNotCreatedError), ContentType.Application.Json, HttpStatusCode.InternalServerError)
                     }
                 }
 
@@ -190,7 +190,7 @@ fun main(args: Array<String>) {
                             }
                         }
                     } catch (ex: InvalidParameterException) {
-                        call.respondText(JSON.stringify(MessageError(null, "Invalid Parameters")), ContentType.Application.Json, HttpStatusCode.BadRequest)
+                        call.respondText(JSON.stringify(InvalidParameters), ContentType.Application.Json, HttpStatusCode.BadRequest)
                     } catch (ex: InvalidStateException) {
                         call.respond(HttpStatusCode.InternalServerError, ActionFailure("Couldn't Join Player to Game"))
                     }
@@ -201,8 +201,8 @@ fun main(args: Array<String>) {
                  * Forces a prune of all empty games.
                  */
                 delete("prune") {
-                    pruneGames()
-                    call.respondText(JSON.stringify(StatusMessage("Prune OK")), ContentType.Application.Json)
+                    val numPruned = pruneGames()
+                    call.respondText(JSON.stringify(PruneOK(numPruned)), ContentType.Application.Json)
                 }
 
             }

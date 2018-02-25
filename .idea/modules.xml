@@ -11,7 +11,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/frontend/frontend.iml" filepath="$PROJECT_DIR$/.idea/modules/frontend/frontend.iml" group="frontend" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/frontend/frontend_main.iml" filepath="$PROJECT_DIR$/.idea/modules/frontend/frontend_main.iml" group="frontend" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/frontend/frontend_test.iml" filepath="$PROJECT_DIR$/.idea/modules/frontend/frontend_test.iml" group="frontend" />
-      <module fileurl="file://$PROJECT_DIR$/spyfall.iml" filepath="$PROJECT_DIR$/spyfall.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/spyfall.iml" filepath="$PROJECT_DIR$/.idea/modules/spyfall.iml" />
     </modules>
   </component>
 </project>
