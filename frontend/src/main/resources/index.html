@@ -8,11 +8,19 @@
 <body>
 <form>
     <label for="nametext">Name</label><input type="text" id="nametext">
-    <input type="button" id="submitbutton" value="Submit Name">
+    <input type="button" id="namesubmitbutton" value="Create User">
+</form>
+<form>
+    <label for="gametext">Game</label><input type="text" id="gametext">
+    <input type="button" id="gamesubmitbutton" value="Create/Set Game">
+</form>
+<form>
+    <input type="button" id="connectbutton" value="Connect">
 </form>
 <div id="app">
     <script type="text/javascript" src="lib/kotlin.js"></script>
     <script type="text/javascript" src="lib/kotlinx-html-js.js"></script>
+    <script type="text/javascript" src="lib/kotlinx-serialization-runtime-js.js"></script>
     <script type="text/javascript" src="lib/frontend.js"></script>
 </div>
 </body>

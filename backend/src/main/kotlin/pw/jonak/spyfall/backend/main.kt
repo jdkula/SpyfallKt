@@ -10,18 +10,27 @@ import io.ktor.response.respondText
 import io.ktor.routing.*
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSockets
+import io.ktor.websocket.readText
+import io.ktor.websocket.webSocket
+import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.serialization.json.JSON
-import pw.jonak.spyfall.backend.SqlHelper.createGame
-import pw.jonak.spyfall.backend.SqlHelper.createTables
-import pw.jonak.spyfall.backend.SqlHelper.createUser
-import pw.jonak.spyfall.backend.SqlHelper.ensureRegistered
-import pw.jonak.spyfall.backend.SqlHelper.getGameInfo
-import pw.jonak.spyfall.backend.SqlHelper.joinGame
-import pw.jonak.spyfall.backend.SqlHelper.pruneGames
-import pw.jonak.spyfall.backend.SqlHelper.prunePlayers
-import pw.jonak.spyfall.backend.SqlHelper.userExists
+import kotlinx.serialization.list
+import kotlinx.serialization.serializer
+import pw.jonak.spyfall.backend.gameElements.AllLocations
+import pw.jonak.spyfall.backend.gameElements.Location
+import pw.jonak.spyfall.backend.storage.GameStore.createGame
+import pw.jonak.spyfall.backend.storage.GameStore.getGameInfo
+import pw.jonak.spyfall.backend.storage.GameStore.joinGame
+import pw.jonak.spyfall.backend.storage.GameStore.pruneGames
+import pw.jonak.spyfall.backend.storage.UserStore
+import pw.jonak.spyfall.backend.storage.UserStore.createUser
+import pw.jonak.spyfall.backend.storage.UserStore.ensureRegistered
+import pw.jonak.spyfall.backend.storage.UserStore.pruneUsers
+import pw.jonak.spyfall.backend.storage.UserStore.userExists
 import pw.jonak.spyfall.common.*
+import java.io.IOException
 import java.security.InvalidParameterException
 import java.time.Duration
 
@@ -31,7 +40,6 @@ val server = SpyfallGameServer()
  * Sets up the server, and contains routing information for REST.
  */
 fun main(args: Array<String>) {
-    createTables()
     val server = embeddedServer(Netty, 8080) {
         install(CORS) {
             anyHost()
@@ -40,6 +48,38 @@ fun main(args: Array<String>) {
             pingPeriod = Duration.ofSeconds(5L)
         }
         routing {
+
+            /**
+             * WEBSOCKET /ws?user_id=USER_ID&game_id=GAME_ID
+             * Opens a websocket connection for userId [user_id], for game negotiation.
+             */
+            webSocket("/ws") {
+                try {
+                    val userId: Int? = call.parameters["user_id"]?.toIntOrNull()
+                    val gameId: String? = call.parameters["game_id"]
+                    if (userId == null || gameId == null) throw InvalidParameterException()
+                    println("Join request found for $userId -> $gameId!")
+
+                    UserStore.getExistingUser(userId)?.let { user ->
+                        server.joinGame(JoinGameRequest(user.id, user.userName, gameId), this)
+                        println("$userId joined!")
+                        try {
+                            incoming.consumeEach { frame ->
+                                if (frame is Frame.Text) {
+                                    println("$userId -> ${frame.readText()}")
+                                }
+                            }
+                        } catch (ex: IOException) {
+                            println("$userId's connection closed unexpectedly.")
+                        } finally {
+                            server.userLeave(userId, this)
+                        }
+                    }
+                } catch (ex: InvalidParameterException) {
+                    call.respondText(JSON.stringify(InvalidParameters()), ContentType.Application.Json, HttpStatusCode.BadRequest)
+                }
+            }
+
             /**
              * /execute
              * Contains admin commands the server can execute.
@@ -50,7 +90,7 @@ fun main(args: Array<String>) {
                  * Shuts down the server.
                  */
                 post("shutdown") {
-                    call.respondText(JSON.stringify(ServerShutdownOK), ContentType.Application.Json)
+                    call.respondText(JSON.stringify(ServerShutdownOK()), ContentType.Application.Json)
                     System.exit(0)
                 }
             }
@@ -68,30 +108,30 @@ fun main(args: Array<String>) {
                     try {
                         val userName = context.parameters["name"]
                         if (userName.isNullOrEmpty()) throw InvalidParameterException()
-                        val userInfo: UserRegistrationInformation = createUser(userName!!)
+                        val userInfo: UserRegistrationInformation = createUser(userName!!).toMessage()
                         call.respondText(JSON.stringify(userInfo), ContentType.Application.Json, HttpStatusCode.Created)
                     } catch (ex: AbstractMethodError) {
                         call.respondText(JSON.stringify(ActionFailure("DB Error")), ContentType.Application.Json, HttpStatusCode.InternalServerError)
                     } catch (ex: InvalidParameterException) {
-                        call.respondText(JSON.stringify(InvalidParameters), ContentType.Application.Json, HttpStatusCode.BadRequest)
+                        call.respondText(JSON.stringify(InvalidParameters()), ContentType.Application.Json, HttpStatusCode.BadRequest)
                     }
                 }
 
                 /**
-                 * POST /user/ensure?id=INT&name=STRING
-                 * Ensures that the user [id] is registered; if not,
+                 * POST /user/ensure?user_id=INT&name=STRING
+                 * Ensures that the user [user_id] is registered; if not,
                  * registers it. Returns [UserRegistrationInformation].
                  */
                 post("ensure") {
                     try {
-                        val userId = context.parameters["id"]?.toIntOrNull()
+                        val userId = context.parameters["user_id"]?.toIntOrNull()
                         val userName = context.parameters["name"]
                         if (userId == null || userName.isNullOrEmpty()) throw InvalidParameterException()
                         val userInfo = ensureRegistered(userId, userName!!)
-                        val statusCode = if (userInfo.user_id == userId) HttpStatusCode.OK else HttpStatusCode.Created
+                        val statusCode = if (userInfo.id == userId) HttpStatusCode.OK else HttpStatusCode.Created
                         call.respondText(JSON.stringify(userInfo), ContentType.Application.Json, statusCode)
                     } catch (ex: InvalidParameterException) {
-                        call.respondText(JSON.stringify(InvalidParameters), ContentType.Application.Json, HttpStatusCode.BadRequest)
+                        call.respondText(JSON.stringify(InvalidParameters()), ContentType.Application.Json, HttpStatusCode.BadRequest)
                     }
                 }
 
@@ -109,7 +149,7 @@ fun main(args: Array<String>) {
                             call.respondText(JSON.stringify(UserNotFound(userId)), ContentType.Application.Json, HttpStatusCode.NotFound)
                         }
                     } catch (ex: InvalidParameterException) {
-                        call.respondText(JSON.stringify(InvalidParameters), ContentType.Application.Json, HttpStatusCode.BadRequest)
+                        call.respondText(JSON.stringify(InvalidParameters()), ContentType.Application.Json, HttpStatusCode.BadRequest)
                     }
                 }
 
@@ -118,7 +158,7 @@ fun main(args: Array<String>) {
                  * Forces a prune of all expired users.
                  */
                 delete("prune") {
-                    val numPruned = prunePlayers()
+                    val numPruned = pruneUsers()
                     call.respondText(JSON.stringify(PruneOK(numPruned)), ContentType.Application.Json)
                 }
             }
@@ -146,7 +186,7 @@ fun main(args: Array<String>) {
                             call.respondText(JSON.stringify(gameInfo), ContentType.Application.Json)
                         }
                     } catch (ex: InvalidParameterException) {
-                        call.respondText(JSON.stringify(InvalidParameters), ContentType.Application.Json, HttpStatusCode.BadRequest)
+                        call.respondText(JSON.stringify(InvalidParameters()), ContentType.Application.Json, HttpStatusCode.BadRequest)
                     }
                 }
 
@@ -158,10 +198,11 @@ fun main(args: Array<String>) {
                 post("create") {
                     try {
                         val gameCode = createGame()
-                        val gameInformation = getGameInfo(gameCode) ?: throw InvalidStateException("")
+                        val gameInformation = getGameInfo(gameCode)
+                                ?: throw InvalidStateException("Created game doesn't exist!")
                         call.respondText(JSON.stringify(gameInformation), ContentType.Application.Json, HttpStatusCode.Created)
                     } catch (ex: InvalidStateException) {
-                        call.respondText(JSON.stringify(GameNotCreatedError), ContentType.Application.Json, HttpStatusCode.InternalServerError)
+                        call.respondText(JSON.stringify(GameNotCreatedError()), ContentType.Application.Json, HttpStatusCode.InternalServerError)
                     }
                 }
 
@@ -190,7 +231,7 @@ fun main(args: Array<String>) {
                             }
                         }
                     } catch (ex: InvalidParameterException) {
-                        call.respondText(JSON.stringify(InvalidParameters), ContentType.Application.Json, HttpStatusCode.BadRequest)
+                        call.respondText(JSON.stringify(InvalidParameters()), ContentType.Application.Json, HttpStatusCode.BadRequest)
                     } catch (ex: InvalidStateException) {
                         call.respond(HttpStatusCode.InternalServerError, ActionFailure("Couldn't Join Player to Game"))
                     }
@@ -208,16 +249,36 @@ fun main(args: Array<String>) {
             }
 
             /**
+             * /location
+             * Contains REST commands having to do with
+             * locations and location sets.
+             */
+            route("/location") {
+
+                /**
+                 * GET /location
+                 * Gets the standard set of locations.
+                 */
+                get {
+                    call.respondText(JSON.stringify(Location::class.serializer().list, AllLocations.values.toList()), ContentType.Application.Json)
+                }
+            }
+
+            /**
              * /test
              * Contains test REST commands.
              */
             route("/test") {
                 /**
-                 * GET /test/{CMD}
+                 * GET /test/params/{CMD}
                  * Shows all the parameters passed into the method, including the path {CMD}.
                  */
-                get("{cmd}") {
+                get("/params/{cmd}") {
                     call.respondText("${context.parameters}")
+                }
+
+                get("/locations") {
+                    call.respondText("$AllLocations")
                 }
             }
             get("/") {

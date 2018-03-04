@@ -6,6 +6,7 @@ repositories {
     jcenter()
     maven { url  "http://dl.bintray.com/kotlin/ktor" }
     maven { url  "https://dl.bintray.com/kotlin/exposed" }
+    maven { url "https://jitpack.io" }
 }
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -16,6 +17,7 @@ dependencies {
     compile "ch.qos.logback:logback-classic:1.2.1"
     compile "org.xerial:sqlite-jdbc:3.21.0.1"
     compile "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_version"
+    compile 'com.github.kizitonwose.time:time:1.0.1'
     expectedBy project(':common')
 }
 
