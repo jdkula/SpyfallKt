@@ -22,7 +22,7 @@
           </option>
           <option name="pluginClasspaths">
             <array>
-              <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-gradle-serialization-plugin/0.4.1/45e8a99dff19a26fbf53a4b8ed858776c279a6f9/kotlinx-gradle-serialization-plugin-0.4.1.jar" />
+              <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-gradle-serialization-plugin/0.4.2/99f925dc0a799c8dc20ee9046bb85381774e3a7b/kotlinx-gradle-serialization-plugin-0.4.2.jar" />
             </array>
           </option>
           <option name="coroutinesState" value="enable" />
@@ -40,8 +40,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="common_main" />
     <orderEntry type="library" name="Gradle: io.ktor:ktor-websockets:0.9.1" level="project" />
+    <orderEntry type="module" module-name="common_main" />
     <orderEntry type="library" name="Gradle: io.ktor:ktor-server-netty:0.9.1" level="project" />
     <orderEntry type="library" name="Gradle: io.ktor:ktor-server-host-common:0.9.1" level="project" />
     <orderEntry type="library" name="Gradle: io.ktor:ktor-server-core:0.9.1" level="project" />
@@ -51,7 +51,7 @@
     <orderEntry type="library" name="Gradle: org.jetbrains.exposed:exposed:0.10.1" level="project" />
     <orderEntry type="library" name="Gradle: ch.qos.logback:logback-classic:1.2.1" level="project" />
     <orderEntry type="library" name="Gradle: org.xerial:sqlite-jdbc:3.21.0.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.4.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.4.2" level="project" />
     <orderEntry type="library" name="Gradle: com.github.kizitonwose.time:time:1.0.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-reflect:1.2.21" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:0.22.1" level="project" />

@@ -1,56 +1,99 @@
 package pw.jonak.spyfall.common
 
 import kotlinx.serialization.Optional
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 
 interface SpyfallMessage {
-    val message_name: String
-    val SENDER_SIDE: Side
+    val messageType: String
+    val senderSide: Side
 }
 
 @Serializable
 class SpyfallMessageImpl(
-        override val message_name: String,
-        override val SENDER_SIDE: Side
+    @SerialName("message_type") override val messageType: String,
+    @SerialName("sender_side") override val senderSide: Side
 ) : SpyfallMessage
 
-fun deserializeMessage(message: String): SpyfallMessage {
-    val stubMessage = JSON.parse<SpyfallMessageImpl>(message)
+fun String.deserialize(): SpyfallMessage {
+    val stubMessage = JSON.nonstrict.parse<SpyfallMessageImpl>(this)
 
-    return when (stubMessage.message_name) {
-        UserRequest.message_name -> JSON.parse<UserRequest>(message)
-        UserRegistrationInformation.message_name -> JSON.parse<UserRegistrationInformation>(message)
-        GameInformation.message_name -> JSON.parse<GameInformation>(message)
-        JoinGameRequest.message_name -> JSON.parse<JoinGameRequest>(message)
-        LeaveGameRequest.message_name -> JSON.parse<LeaveGameRequest>(message)
-        StartGameRequest.message_name -> JSON.parse<StartGameRequest>(message)
-        StopGameRequest.message_name -> JSON.parse<StopGameRequest>(message)
-        MessageError.message_name -> {
-            val error = JSON.parse<MessageError>(message)
-            when(error.reason) {
-                InvalidParameters.reason -> JSON.parse<InvalidParameters>(message)
+    return when (stubMessage.messageType) {
+        UserRegistrationRequest.messageTypeName -> JSON.parse<UserRegistrationRequest>(this)
+        UserRegistrationInformation.messageTypeName -> JSON.parse<UserRegistrationInformation>(this)
+        GameInformation.messageTypeName -> JSON.parse<GameInformation>(this)
+        CreateGameRequest.messageTypeName -> JSON.parse<CreateGameRequest>(this)
+        JoinGameRequest.messageTypeName -> JSON.parse<JoinGameRequest>(this)
+        LeaveGameRequest.messageTypeName -> JSON.parse<LeaveGameRequest>(this)
+        StartGameRequest.messageTypeName -> JSON.parse<StartGameRequest>(this)
+        StopGameRequest.messageTypeName -> JSON.parse<StopGameRequest>(this)
+        PauseGameRequest.messageTypeName -> JSON.parse<PauseGameRequest>(this)
+        UnpauseGameRequest.messageTypeName -> JSON.parse<UnpauseGameRequest>(this)
+        MessageError.messageTypeName -> {
+            val error = JSON.parse<MessageError>(this)
+            when (error.reason) {
+                InvalidParameters.reason -> JSON.parse<InvalidParameters>(this)
                 else -> error
             }
         }
-        ActionFailure.message_name -> {
-            val failure = JSON.parse<ActionFailure>(message)
-            when(failure.reason) {
-                GameNotCreatedError.reason -> JSON.parse<GameNotCreatedError>(message)
+        ActionFailure.messageTypeName -> {
+            val failure = JSON.parse<ActionFailure>(this)
+            when (failure.reason) {
+                GameNotCreatedError.reason -> JSON.parse<GameNotCreatedError>(this)
                 else -> failure
             }
         }
-        StatusMessage.message_name -> {
-            val status = JSON.parse<StatusMessage>(message)
-            when(status.status) {
-                UserNotFound.status -> JSON.parse<UserNotFound>(message)
-                GameNotFound.status -> JSON.parse<GameNotFound>(message)
-                PruneOK.status -> JSON.parse<PruneOK>(message)
-                ServerShutdownOK.status -> JSON.parse<ServerShutdownOK>(message)
+        StatusMessage.messageTypeName -> {
+            val status = JSON.parse<StatusMessage>(this)
+            when (status.status) {
+                UserNotFound.status -> JSON.parse<UserNotFound>(this)
+                GameNotFound.status -> JSON.parse<GameNotFound>(this)
+                PruneOK.status -> JSON.parse<PruneOK>(this)
+                ServerShutdownOK.status -> JSON.parse<ServerShutdownOK>(this)
                 else -> status
             }
         }
+        AdminAction.messageTypeName -> JSON.parse<AdminAction>(this)
         else -> stubMessage
+    }
+}
+
+fun SpyfallMessage.serialize(): String {
+    return when (this.messageType) {
+        UserRegistrationRequest.messageTypeName -> JSON.stringify(this as UserRegistrationRequest)
+        UserRegistrationInformation.messageTypeName -> JSON.stringify(this as UserRegistrationInformation)
+        GameInformation.messageTypeName -> JSON.stringify(this as GameInformation)
+        CreateGameRequest.messageTypeName -> JSON.stringify(this as CreateGameRequest)
+        JoinGameRequest.messageTypeName -> JSON.stringify(this as JoinGameRequest)
+        LeaveGameRequest.messageTypeName -> JSON.stringify(this as LeaveGameRequest)
+        StartGameRequest.messageTypeName -> JSON.stringify(this as StartGameRequest)
+        StopGameRequest.messageTypeName -> JSON.stringify(this as StopGameRequest)
+        PauseGameRequest.messageTypeName -> JSON.stringify(this as PauseGameRequest)
+        UnpauseGameRequest.messageTypeName -> JSON.stringify(this as UnpauseGameRequest)
+        MessageError.messageTypeName -> {
+            when ((this as MessageError).reason) {
+                InvalidParameters.reason -> JSON.stringify(this as InvalidParameters)
+                else -> JSON.stringify(this)
+            }
+        }
+        ActionFailure.messageTypeName -> {
+            when ((this as ActionFailure).reason) {
+                GameNotCreatedError.reason -> JSON.stringify(this as GameNotCreatedError)
+                else -> JSON.stringify(this)
+            }
+        }
+        StatusMessage.messageTypeName -> {
+            when ((this as StatusMessage).status) {
+                UserNotFound.status -> JSON.stringify(this as UserNotFound)
+                GameNotFound.status -> JSON.stringify(this as GameNotFound)
+                PruneOK.status -> JSON.stringify(this as PruneOK)
+                ServerShutdownOK.status -> JSON.stringify(this as ServerShutdownOK)
+                else -> JSON.stringify(this)
+            }
+        }
+        AdminAction.messageTypeName -> JSON.stringify(this as AdminAction)
+        else -> JSON.stringify(SpyfallMessageImpl(this.messageType, this.senderSide))
     }
 }
 
@@ -60,96 +103,180 @@ enum class Side {
     EITHER
 }
 
+enum class AdminActionType {
+    SHUTDOWN,
+    PRUNE_GAMES,
+    PRUNE_USERS
+}
+
 @Serializable
-class UserRequest(val user_name: String) : SpyfallMessage {
-    override val message_name = Companion.message_name
-    override val SENDER_SIDE = Side.CLIENT
+class UserRegistrationRequest(@SerialName("user_name") val userName: String) : SpyfallMessage {
+    @SerialName("message_type")
+    override val messageType = Companion.messageTypeName
+    @SerialName("sender_side")
+    override val senderSide = Side.CLIENT
 
     companion object {
-        const val message_name = "user_request"
+        const val messageTypeName = "user_request"
     }
 }
 
 @Serializable
-class UserRegistrationInformation(val user_id: Int, val user_name: String) : SpyfallMessage {
-    override val message_name = Companion.message_name
-    override val SENDER_SIDE = Side.SERVER
+class UserRegistrationInformation(
+    @SerialName("user_id") val userId: Int,
+    @SerialName("user_name") val userName: String
+) : SpyfallMessage {
+    @SerialName("message_type")
+    override val messageType = Companion.messageTypeName
+    @SerialName("sender_side")
+    override val senderSide = Side.SERVER
 
     companion object {
-        const val message_name = "user_registration_information"
+        const val messageTypeName = "user_registration_information"
     }
 }
 
 @Serializable
 data class GameInformation(
-        @Optional val user_id: Int? = null,
-        val game_code: String,
-        val user_names: List<String>,
-        val game_has_started: Boolean,
-        @Optional val start_time: Long? = null,
-        @Optional val pause_time: Long? = null,
-        @Optional val game_length: Long? = null,
-        @Optional val is_spy: Boolean? = null,
-        @Optional val first_player: Int? = null,
-        @Optional val location: String? = null,
-        @Optional val role: String? = null
+    @SerialName("user_id") @Optional val userId: Int? = null,
+    @SerialName("game_code") val gameCode: String,
+    @SerialName("user_name_list") val userNameList: List<String>,
+    @SerialName("game_has_started") val gameHasStarted: Boolean,
+    @SerialName("start_time") @Optional val startTime: Long? = null,
+    @SerialName("pause_time") @Optional val pauseTime: Long? = null,
+    @SerialName("game_length") @Optional val gameLength: Long? = null,
+    @SerialName("is_spy") @Optional val isSpy: Boolean? = null,
+    @SerialName("first_player") @Optional val firstPlayer: Int? = null,
+    @Optional val location: String? = null,
+    @Optional val role: String? = null
 ) : SpyfallMessage {
-    override val message_name = Companion.message_name
-    override val SENDER_SIDE = Side.SERVER
+    @SerialName("message_type")
+    override val messageType = Companion.messageTypeName
+    @SerialName("sender_side")
+    override val senderSide = Side.SERVER
 
     companion object {
-        const val message_name = "game_information"
+        const val messageTypeName = "game_information"
     }
 }
 
 @Serializable
-class JoinGameRequest(val user_id: Int, val user_name: String, val game_code: String) :
-        SpyfallMessage {
-    override val message_name = Companion.message_name
-    override val SENDER_SIDE = Side.CLIENT
+class CreateGameRequest(
+    @SerialName("user_id") @Optional val userId: Int? = null
+) : SpyfallMessage {
+    @SerialName("sender_side")
+    override val senderSide = Side.CLIENT
+    @SerialName("message_type")
+    override val messageType = Companion.messageTypeName
 
     companion object {
-        const val message_name = "join_game_request"
+        const val messageTypeName = "join_game_request"
     }
 }
 
 @Serializable
-class LeaveGameRequest(val user_id: Int, val game_code: String) : SpyfallMessage {
-    override val message_name = Companion.message_name
-    override val SENDER_SIDE = Side.CLIENT
+class JoinGameRequest(
+    @SerialName("user_id") val userId: Int,
+    @SerialName("user_name") val userName: String,
+    @SerialName("game_code") val gameCode: String
+) : SpyfallMessage {
+    @SerialName("message_type")
+    override val messageType = Companion.messageTypeName
+    @SerialName("sender_side")
+    override val senderSide = Side.CLIENT
 
     companion object {
-        const val message_name = "leave_game_request"
+        const val messageTypeName = "join_game_request"
     }
 }
 
 @Serializable
-class StartGameRequest(val user_id: Int, val game_code: String) : SpyfallMessage {
-    override val message_name = Companion.message_name
-    override val SENDER_SIDE = Side.CLIENT
+class LeaveGameRequest(
+    @SerialName("user_id") val userId: Int,
+    @SerialName("game_code") val gameCode: String
+) : SpyfallMessage {
+    @SerialName("message_type")
+    override val messageType = Companion.messageTypeName
+    @SerialName("sender_side")
+    override val senderSide = Side.CLIENT
 
     companion object {
-        const val message_name = "start_game_request"
+        const val messageTypeName = "leave_game_request"
     }
 }
 
 @Serializable
-class StopGameRequest(val user_id: Int, val game_code: String) : SpyfallMessage {
-    override val message_name = Companion.message_name
-    override val SENDER_SIDE = Side.CLIENT
+class StartGameRequest(
+    @SerialName("user_id") val userId: Int,
+    @SerialName("game_code") val gameCode: String
+) : SpyfallMessage {
+    @SerialName("message_type")
+    override val messageType = Companion.messageTypeName
+    @SerialName("sender_side")
+    override val senderSide = Side.CLIENT
 
     companion object {
-        const val message_name = "stop_game_request"
+        const val messageTypeName = "start_game_request"
     }
 }
 
 @Serializable
-open class MessageError(val reason: String, val bad_message_name: String? = null) : SpyfallMessage {
-    override val message_name = Companion.message_name
-    override val SENDER_SIDE = Side.EITHER
+class PauseGameRequest(
+    @SerialName("user_id") val userId: Int,
+    @SerialName("game_code") val gameCode: String
+) : SpyfallMessage {
+    @SerialName("message_type")
+    override val messageType = Companion.messageTypeName
+    @SerialName("sender_side")
+    override val senderSide = Side.CLIENT
 
     companion object {
-        const val message_name = "message_error"
+        const val messageTypeName = "pause_game_request"
+    }
+}
+
+@Serializable
+class UnpauseGameRequest(
+    @SerialName("user_id") val userId: Int,
+    @SerialName("game_code") val gameCode: String
+) : SpyfallMessage {
+    @SerialName("message_type")
+    override val messageType = Companion.messageTypeName
+    @SerialName("sender_side")
+    override val senderSide = Side.CLIENT
+
+    companion object {
+        const val messageTypeName = "unpause_game_request"
+    }
+}
+
+@Serializable
+class StopGameRequest(
+    @SerialName("user_id") val userId: Int,
+    @SerialName("game_code") val gameCode: String
+) : SpyfallMessage {
+    @SerialName("message_type")
+    override val messageType = Companion.messageTypeName
+    @SerialName("sender_side")
+    override val senderSide = Side.CLIENT
+
+    companion object {
+        const val messageTypeName = "stop_game_request"
+    }
+}
+
+@Serializable
+open class MessageError(
+    val reason: String,
+    @SerialName("bad_message_type") val badMessageType: String? = null
+) : SpyfallMessage {
+    @SerialName("message_type")
+    override val messageType = Companion.messageTypeName
+    @SerialName("sender_side")
+    override val senderSide = Side.EITHER
+
+    companion object {
+        const val messageTypeName = "message_error"
     }
 }
 
@@ -161,12 +288,16 @@ class InvalidParameters : MessageError(Companion.reason) {
 }
 
 @Serializable
-open class ActionFailure(val reason: String) : SpyfallMessage {
-    override val message_name = Companion.message_name
-    override val SENDER_SIDE = Side.EITHER
+open class ActionFailure(
+    val reason: String
+) : SpyfallMessage {
+    @SerialName("message_type")
+    override val messageType = Companion.messageTypeName
+    @SerialName("sender_side")
+    override val senderSide = Side.EITHER
 
     companion object {
-        const val message_name = "action_failure"
+        const val messageTypeName = "action_failure"
     }
 }
 
@@ -178,31 +309,41 @@ class GameNotCreatedError : ActionFailure(Companion.reason) {
 }
 
 @Serializable
-open class StatusMessage(val status: String) : SpyfallMessage {
-    override val message_name = Companion.message_name
-    override val SENDER_SIDE = Side.EITHER
+open class StatusMessage(
+    val status: String
+) : SpyfallMessage {
+    @SerialName("message_type")
+    override val messageType = Companion.messageTypeName
+    @SerialName("sender_side")
+    override val senderSide = Side.EITHER
 
     companion object {
-        const val message_name = "status_message"
+        const val messageTypeName = "status_message"
     }
 }
 
 @Serializable
-class UserNotFound(val user_id: Int) : StatusMessage(Companion.status) {
+class UserNotFound(
+    @SerialName("missing_user_id") val missingUserId: Int
+) : StatusMessage(Companion.status) {
     companion object {
         const val status = "user_not_found"
     }
 }
 
 @Serializable
-class GameNotFound(val game_id: String) : StatusMessage(Companion.status) {
+class GameNotFound(
+    @SerialName("missing_game_code") val gameCode: String
+) : StatusMessage(Companion.status) {
     companion object {
         const val status = "game_not_found"
     }
 }
 
 @Serializable
-class PruneOK(val num_pruned: Int) : StatusMessage(Companion.status) {
+class PruneOK(
+    @SerialName("num_pruned") val numPruned: Int
+) : StatusMessage(Companion.status) {
     companion object {
         const val status = "prune_ok"
     }
@@ -212,5 +353,19 @@ class PruneOK(val num_pruned: Int) : StatusMessage(Companion.status) {
 class ServerShutdownOK : StatusMessage(Companion.status) {
     companion object {
         const val status = "server_shutdown_ok"
+    }
+}
+
+@Serializable
+class AdminAction(
+    val action: AdminActionType
+) : SpyfallMessage {
+    @SerialName("sender_side")
+    override val senderSide = Side.CLIENT
+    @SerialName("message_type")
+    override val messageType = Companion.messageTypeName
+
+    companion object {
+        const val messageTypeName = "admin_action"
     }
 }

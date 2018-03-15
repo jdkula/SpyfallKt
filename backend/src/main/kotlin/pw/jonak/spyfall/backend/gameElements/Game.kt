@@ -33,9 +33,6 @@ class Game(val code: String, val location: Location, val gameLength: Duration = 
     override fun hashCode(): Int = code.hashCode()
 
     fun addUser(user: User) {
-        if (user !in UserStore.users.values)
-            throw IllegalStateException("Nonexistent user tried to join a game!")
-
         _users += user
     }
 
@@ -64,5 +61,17 @@ class Game(val code: String, val location: Location, val gameLength: Duration = 
 
     fun removeUser(user: User) {
         _users.remove(user)
+    }
+
+    fun pause() {
+        pauseTime = Calendar.getInstance().timeInMillis
+    }
+
+    fun unpause() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    fun stop() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

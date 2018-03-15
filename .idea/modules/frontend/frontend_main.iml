@@ -4,16 +4,18 @@
     <facet type="kotlin-language" name="Kotlin">
       <configuration version="3" platform="JavaScript " useProjectSettings="false">
         <implements>common_main</implements>
-        <productionOutputPath>$MODULE_DIR$/../../../frontend/build/classes/kotlin/main/frontend.js</productionOutputPath>
+        <productionOutputPath>$MODULE_DIR$/../../../frontend/build/js/frontend.js</productionOutputPath>
         <testOutputPath>$MODULE_DIR$/../../../frontend/build/classes/kotlin/test/frontend_test.js</testOutputPath>
         <compilerSettings>
           <option name="additionalArguments" value="-Xmulti-platform" />
         </compilerSettings>
         <compilerArguments>
-          <option name="outputFile" value="$MODULE_DIR$/../../../frontend/build/classes/kotlin/main/frontend.js" />
+          <option name="outputFile" value="$MODULE_DIR$/../../../frontend/build/js/frontend.js" />
           <option name="noStdlib" value="true" />
+          <option name="sourceMap" value="true" />
           <option name="metaInfo" value="true" />
           <option name="target" value="v5" />
+          <option name="moduleKind" value="commonjs" />
           <option name="main" value="call" />
           <option name="languageVersion" value="1.2" />
           <option name="apiVersion" value="1.2" />
@@ -22,9 +24,10 @@
           </option>
           <option name="pluginClasspaths">
             <array>
-              <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-gradle-serialization-plugin/0.4.1/45e8a99dff19a26fbf53a4b8ed858776c279a6f9/kotlinx-gradle-serialization-plugin-0.4.1.jar" />
+              <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-gradle-serialization-plugin/0.4.2/99f925dc0a799c8dc20ee9046bb85381774e3a7b/kotlinx-gradle-serialization-plugin-0.4.2.jar" />
             </array>
           </option>
+          <option name="coroutinesState" value="enable" />
         </compilerArguments>
       </configuration>
     </facet>
@@ -39,10 +42,13 @@
     <orderEntry type="jdk" jdkName="Kotlin SDK" jdkType="KotlinSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="common_main" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-html-js:0.6.8" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.4.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.4.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains:kotlin-react-dom:16.2.1-pre.15-kotlin-1.2.30" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains:kotlin-react:16.2.1-pre.15-kotlin-1.2.30" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains:kotlin-extensions:1.0.1-pre.15-kotlin-1.2.30" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-html-js:0.6.9" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-js:1.2.30" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-html-common:0.6.8" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.1.60" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-html-common:0.6.9" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.2.21" level="project" />
   </component>
 </module>

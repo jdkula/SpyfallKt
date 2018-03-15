@@ -3,8 +3,8 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../frontend">
-      <excludeFolder url="file://$MODULE_DIR$/../../../frontend/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/../../../frontend/build" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../frontend/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/../../../frontend/out" />
     </content>
     <orderEntry type="inheritedJdk" />

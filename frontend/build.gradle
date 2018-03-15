@@ -1,38 +1,97 @@
 apply plugin: 'kotlin2js'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'kotlin-platform-js'
+apply plugin: 'kotlin-dce-js'
+apply plugin: 'org.jetbrains.kotlin.frontend'
 
 repositories {
     jcenter()
+    maven { url "https://kotlin.bintray.com/kotlin-js-wrappers" }
 }
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
     compile "org.jetbrains.kotlinx:kotlinx-html-js:0.6.8"
     compile "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:$serialization_version"
+    compile 'org.jetbrains:kotlin-extensions:1.0.1-pre.15-kotlin-1.2.30'
+    compile 'org.jetbrains:kotlin-react:16.2.1-pre.15-kotlin-1.2.30'
+    compile 'org.jetbrains:kotlin-react-dom:16.2.1-pre.15-kotlin-1.2.30'
+//    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core-common:0.22.5'
+//    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core-js:0.22.5'
     expectedBy project(':common')
 }
 
 
-task assembleWeb(type: Sync) {
-    configurations.compile.each { File file ->
-        from(zipTree(file.absolutePath), {
-            includeEmptyDirs = false
-            include { fileTreeElement ->
-                def path = fileTreeElement.path
-                path.endsWith(".js") && (path.startsWith("META-INF/resources/") ||
-                        !path.startsWith("META-INF/"))
-            }
-        })
+//task assembleWeb(type: Sync) {
+//    configurations.compile.each { File file ->
+//        from(zipTree(file.absolutePath), {
+//            includeEmptyDirs = false
+//            include { fileTreeElement ->
+//                def path = fileTreeElement.path
+//                path.endsWith(".js") && (path.startsWith("META-INF/resources/") ||
+//                        !path.startsWith("META-INF/"))
+//            }
+//        })
+//    }
+//    from compileKotlin2Js.destinationDir
+//    into "${buildDir}/web/lib"
+//
+//    dependsOn classes
+//}
+//
+//task copyResource(type: Copy) {
+//    from "src/main/resources"
+//    into "${buildDir}/web"
+//}
+//assemble.dependsOn assembleWeb
+//assemble.dependsOn copyResource
+
+compileKotlin2Js {
+    kotlinOptions {
+        metaInfo = true
+        outputFile = "$project.buildDir.path/js/${project.name}.js"
+        sourceMap = true
+        moduleKind = 'commonjs'
+        main = "call"
     }
-    from compileKotlin2Js.destinationDir
-    into "${buildDir}/web/lib"
-
-    dependsOn classes
 }
 
-task copyResource(type: Copy) {
-    from "src/main/resources"
-    into "${buildDir}/web"
+boolean isProduction = false
+
+runDceKotlinJs {
+    dceOptions {
+        if(!isProduction) {
+            devMode = true
+        }
+    }
 }
-assemble.dependsOn assembleWeb
-assemble.dependsOn copyResource
+
+kotlinFrontend {
+    downloadNodeJsVersion = 'latest'
+
+    npm {
+        dependency("react", "16.2.0")
+        dependency("react-dom", "16.2.0")
+        dependency "uglifyjs-webpack-plugin"
+        dependency "mprogress"
+        devDependency "style-loader"
+    }
+
+
+    if(isProduction) {
+        define 'PRODUCTION', true
+    } else {
+        define 'PRODUCTION', false
+    }
+
+    webpackBundle {
+        bundleName = "FrontendMain"
+        contentPath = file('src/main/resources')
+        proxyUrl = "http://localhost:8080"
+    }
+}
+
+kotlin {
+    experimental {
+        coroutines 'enable'
+    }
+}

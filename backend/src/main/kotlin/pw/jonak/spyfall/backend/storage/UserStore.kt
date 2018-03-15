@@ -3,7 +3,7 @@ package pw.jonak.spyfall.backend.storage
 import pw.jonak.spyfall.backend.gameElements.User
 import java.util.*
 
-object UserStore {
+class UserStore {
     private val _users = HashMap<Int, User>()
     val users: Map<Int, User> get() = _users
 

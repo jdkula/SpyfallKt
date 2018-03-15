@@ -2,21 +2,19 @@ package pw.jonak.spyfall.backend.storage
 
 import pw.jonak.spyfall.backend.gameElements.AllLocations
 import pw.jonak.spyfall.backend.gameElements.Game
-import pw.jonak.spyfall.backend.gameElements.User
 import pw.jonak.spyfall.common.GameInformation
 import java.util.*
 
-object GameStore {
+class GameStore(private val userStore: UserStore) {
     private val _games = HashMap<String, Game>()
     val games: Map<String, Game> get() = _games
-    const val GAME_CODE_LENGTH: Long = 4
 
     fun joinGame(userId: Int, gameCode: String): Game? {
         if (gameCode !in _games)
             return null
 
         return _games[gameCode]?.let { game ->
-            UserStore.users[userId]?.let { user ->
+            userStore.users[userId]?.let { user ->
                 game.addUser(user)
                 game
             }
@@ -25,7 +23,7 @@ object GameStore {
 
     fun leaveGame(userId: Int, gameCode: String) {
         _games[gameCode]?.let { game ->
-            UserStore.users[userId]?.let { user ->
+            userStore.users[userId]?.let { user ->
                 game.removeUser(user)
             }
         }
@@ -33,7 +31,7 @@ object GameStore {
 
     fun getGameInfo(gameCode: String, userId: Int? = null): GameInformation? {
         return _games[gameCode]?.let { game ->
-            UserStore.users[userId].let { user ->
+            userStore.users[userId].let { user ->
                 game.getGameInfo(user)
             }
         }
@@ -70,6 +68,10 @@ object GameStore {
         return Random().ints(GAME_CODE_LENGTH, 0, source.length).toArray()
                 .map(source::get)
                 .joinToString("")
+    }
+
+    companion object {
+        const val GAME_CODE_LENGTH: Long = 4
     }
 
 }

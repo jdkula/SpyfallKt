@@ -6,7 +6,7 @@
         <compilerSettings />
         <compilerArguments>
           <option name="destination" value="$MODULE_DIR$/../../../common/build/classes/kotlin/test" />
-          <option name="classpath" value="$MODULE_DIR$/../../../common/build/classes/java/main;C:/Users/jonak/Sync/Code/Kotlin/Spyfall/common/build/classes/kotlin/main;C:/Users/jonak/Sync/Code/Kotlin/Spyfall/common/build/resources/main;C:/Users/jonak/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-serialization-runtime-common/0.4.1/ff5d1c3060f2b5d7d92cd937c7b58353fc91018a/kotlinx-serialization-runtime-common-0.4.1.jar;C:/Users/jonak/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-common/1.2.30/2d91b29e5d87e144eb023510975df51240553af1/kotlin-stdlib-common-1.2.30.jar;C:/Users/jonak/Sync/Code/Kotlin/Spyfall/common/build/classes/kotlin/main" />
+          <option name="classpath" value="$MODULE_DIR$/../../../common/build/classes/java/main;C:/Users/jonak/Sync/Code/Kotlin/Spyfall/common/build/classes/kotlin/main;C:/Users/jonak/Sync/Code/Kotlin/Spyfall/common/build/resources/main;C:/Users/jonak/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-serialization-runtime-common/0.4.2/522e6890cfc800bf7ad8a6c1a6384893ed187f1/kotlinx-serialization-runtime-common-0.4.2.jar;C:/Users/jonak/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-common/1.2.30/2d91b29e5d87e144eb023510975df51240553af1/kotlin-stdlib-common-1.2.30.jar;C:/Users/jonak/Sync/Code/Kotlin/Spyfall/common/build/classes/kotlin/main" />
           <option name="languageVersion" value="1.2" />
           <option name="apiVersion" value="1.2" />
           <option name="pluginOptions">
@@ -14,7 +14,7 @@
           </option>
           <option name="pluginClasspaths">
             <array>
-              <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-gradle-serialization-plugin/0.4.1/45e8a99dff19a26fbf53a4b8ed858776c279a6f9/kotlinx-gradle-serialization-plugin-0.4.1.jar" />
+              <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-gradle-serialization-plugin/0.4.2/99f925dc0a799c8dc20ee9046bb85381774e3a7b/kotlinx-gradle-serialization-plugin-0.4.2.jar" />
             </array>
           </option>
         </compilerArguments>
@@ -31,7 +31,7 @@
     <orderEntry type="jdk" jdkName="Kotlin SDK" jdkType="KotlinSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="common_main" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.4.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.4.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.2.30" level="project" />
   </component>
   <component name="TestModuleProperties" production-module="common_main" />

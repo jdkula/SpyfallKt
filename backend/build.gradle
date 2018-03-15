@@ -1,12 +1,15 @@
 apply plugin: 'kotlin-platform-jvm'
 apply plugin: 'application'
 apply plugin: 'kotlinx-serialization'
+apply plugin: 'org.junit.platform.gradle.plugin'
+
 
 repositories {
     jcenter()
-    maven { url  "http://dl.bintray.com/kotlin/ktor" }
-    maven { url  "https://dl.bintray.com/kotlin/exposed" }
+    maven { url "http://dl.bintray.com/kotlin/ktor" }
+    maven { url "https://dl.bintray.com/kotlin/exposed" }
     maven { url "https://jitpack.io" }
+    maven { url "https://dl.bintray.com/jetbrains/spek" }
 }
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -18,7 +21,13 @@ dependencies {
     compile "org.xerial:sqlite-jdbc:3.21.0.1"
     compile "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_version"
     compile 'com.github.kizitonwose.time:time:1.0.1'
+
     expectedBy project(':common')
+
+    testCompile "org.mockito:mockito-core:2.+"
+    testCompile "com.nhaarman:mockito-kotlin:1.5.0"
+    testCompile 'org.jetbrains.spek:spek-api:1.1.5'
+    testRuntime 'org.jetbrains.spek:spek-junit-platform-engine:1.1.5'
 }
 
 kotlin {
@@ -38,9 +47,14 @@ compileTestKotlin {
     }
 }
 
-task copyCommon(type: Copy) {
-    //delete file('src/main/kotlin/common')
-    from project(':').file('common/src/main/kotlin')
-    into file('src/main/kotlin/common')
+junitPlatform {
+    filters {
+        engines {
+            include 'spek'
+        }
+    }
 }
+
+
+
 mainClassName = "pw.jonak.spyfall.backend.MainKt"
