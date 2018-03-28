@@ -1,3 +1,43 @@
 .login {
   background-color: red;
 }
+
+.accessibilityonly {
+  opacity: 0;
+  size: 0;
+  font-size: 0;
+  position: absolute;
+  top: -10px;
+  left:-10px;
+}
+
+.linkbutton {
+  background-color: white;
+  text-decoration: underline;
+  border: none;
+  color: darkgray;
+  text-align: left;
+  display: inline-block;
+  font-size: 8pt;
+  margin: 0;
+  cursor: pointer;
+}
+
+.intro-header {
+  font-family: Roboto, sans-serif;
+  font-size: 30px;
+}
+
+.col {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.teletype {
+  font-family: "Source Code Pro", monospace;
+}
+
+.firstplayer {
+  color: darkgray;
+  font-style: italic;
+}

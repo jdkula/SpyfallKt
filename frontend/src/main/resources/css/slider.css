@@ -1,0 +1,42 @@
+/* Thanks https://codepen.io/shalimano/pen/wBmNGJ ! */
+.sslider{
+    position:absolute;
+    width:100vw;
+    height:5px;
+    top: 0;
+    left: 0;
+    overflow-x: hidden;
+}
+
+.sline{
+    position:absolute;
+    opacity: 0.4;
+    background:#4a8df8;
+    width:150vw;
+    height:5px;
+    top: 0;
+    left: 0;
+}
+
+.ssubline{
+    position:absolute;
+    background:#4a8df8;
+    height:5px;
+    top: 0;
+    left: 0;
+}
+.sinc{
+    animation: sincrease 2s infinite;
+}
+.sdec{
+    animation: sdecrease 2s 0.5s infinite;
+}
+
+@keyframes sincrease {
+    from { left: -5vw; width: 5vw; }
+    to { left: 130vw; width: 100vw;}
+}
+@keyframes sdecrease {
+    from { left: -80vw; width: 80vw; }
+    to { left: 110vw; width: 10vw;}
+}

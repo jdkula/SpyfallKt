@@ -47,7 +47,7 @@
     <orderEntry type="library" name="Gradle: org.jetbrains:kotlin-react:16.2.1-pre.15-kotlin-1.2.30" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:kotlin-extensions:1.0.1-pre.15-kotlin-1.2.30" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-html-js:0.6.9" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-js:1.2.30" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-js:1.2.31" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-html-common:0.6.9" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.2.21" level="project" />
   </component>

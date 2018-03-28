@@ -1,18 +1,15 @@
 package pw.jonak.spyfall.backend.storage
 
-import pw.jonak.spyfall.backend.gameElements.AllLocations
 import pw.jonak.spyfall.backend.gameElements.Game
-import pw.jonak.spyfall.common.GameInformation
+import pw.jonak.spyfall.common.LobbyInformation
 import java.util.*
+
 
 class GameStore(private val userStore: UserStore) {
     private val _games = HashMap<String, Game>()
     val games: Map<String, Game> get() = _games
 
     fun joinGame(userId: Int, gameCode: String): Game? {
-        if (gameCode !in _games)
-            return null
-
         return _games[gameCode]?.let { game ->
             userStore.users[userId]?.let { user ->
                 game.addUser(user)
@@ -21,18 +18,24 @@ class GameStore(private val userStore: UserStore) {
         }
     }
 
-    fun leaveGame(userId: Int, gameCode: String) {
-        _games[gameCode]?.let { game ->
+    fun leaveGame(userId: Int, gameCode: String): Game? {
+        return _games[gameCode]?.let { game ->
             userStore.users[userId]?.let { user ->
                 game.removeUser(user)
+            }
+            if(game.users.isEmpty()) {
+                _games.remove(gameCode)
+                null
+            } else {
+                game
             }
         }
     }
 
-    fun getGameInfo(gameCode: String, userId: Int? = null): GameInformation? {
+    fun getLobbyInfo(gameCode: String, userId: Int? = null): LobbyInformation? {
         return _games[gameCode]?.let { game ->
             userStore.users[userId].let { user ->
-                game.getGameInfo(user)
+                game.getLobbyInfo(user)
             }
         }
     }
@@ -53,13 +56,14 @@ class GameStore(private val userStore: UserStore) {
             val hasCode = rc in games
         } while (hasCode)
 
-        _games += rc to Game(rc, AllLocations.randomValue())
+        val newGame = Game(rc)
+        _games += rc to newGame
         return rc
     }
 
     private fun <K, V> Map<K, V>.randomValue(): V {
-        val random = Random().nextInt(this.values.size)
-        return this.values.toList()[random]
+        val random = Random().nextInt(values.size)
+        return values.toList()[random]
     }
 
     private fun randomCode(): String {

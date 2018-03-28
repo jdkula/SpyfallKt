@@ -7,6 +7,8 @@ import java.util.*
 
 class User(val id: Int, var userName: String) {
 
+    var currentGame: String? = null
+
     val expiresAt = Calendar.getInstance() + 1.days
 
     override fun equals(other: Any?): Boolean =

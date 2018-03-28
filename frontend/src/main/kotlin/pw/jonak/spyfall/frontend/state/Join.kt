@@ -2,60 +2,79 @@ package pw.jonak.spyfall.frontend.state
 
 import kotlinx.html.InputType
 import kotlinx.html.id
+import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.onSubmitFunction
 import org.w3c.dom.HTMLInputElement
-import pw.jonak.spyfall.frontend.FrontendMain
+import pw.jonak.spyfall.common.JoinGameRequest
+import pw.jonak.spyfall.common.LocationListRequest
+import pw.jonak.spyfall.common.serialize
+import pw.jonak.spyfall.frontend.ApplicationState
+import pw.jonak.spyfall.frontend.appState
+import pw.jonak.spyfall.frontend.socketClient
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
-import react.dom.br
-import react.dom.form
-import react.dom.input
-import react.dom.label
+import react.dom.*
 import kotlin.browser.document
 
-interface JoinProps : RProps {
-    var name: String
-}
-
-class Join : RComponent<JoinProps, RState>() {
+class Join : RComponent<RProps, RState>() {
 
     override fun RBuilder.render() {
+        span(classes = "accessibilityonly") {
+            +"Join Menu"
+        }
         form {
             attrs {
                 onSubmitFunction = {
-                    FrontendMain.gameCode = (document.getElementById("gamecode") as? HTMLInputElement)?.value
-                    println("Found gamecode ${FrontendMain.gameCode}")
                     it.preventDefault()
+                    val gameCode = (document.getElementById("gamecode") as? HTMLInputElement)?.value
+                    println("Found gamecode ${gameCode}")
+                    if (gameCode != null) {
+                        joinGame(gameCode)
+                    }
                 }
             }
+            div(classes = "row") {
+                div(classes = "s12 input-field") {
+                    input(type = InputType.text, classes = "login") {
+                        attrs {
+                            id = "gamecode"
+                        }
+                    }
+                    label {
+                        +"Game Code"
+                        attrs["htmlFor"] = "gamecode"
+                    }
+                }
 
-            input(type = InputType.text, classes = "login") {
-                attrs {
-                    readonly = true
-                    value = props.name
+                input(type = InputType.submit, classes = "waves-effect waves-light btn col s12 m8 l10") {
+                    attrs {
+                        value = "Join"
+                        id = "joinButton"
+                    }
                 }
-            }
-            br { }
-            input(type = InputType.text, classes = "login") {
-                attrs {
-                    id = "gamecode"
-                }
-            }
-            label {
-                +"Game Code"
-                attrs["htmlFor"] = "gamecode"
-            }
-            input(type = InputType.submit) {
-                attrs {
-                    value = "Join Game!"
+                span(classes = "waves-effect waves-light btn grey col s12 offset-m1 m3 offset-l1 l1") {
+                    +"Back"
+                    attrs {
+                        onClickFunction = {
+                            toMainMenu()
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-fun RBuilder.join(name: String) = child(Join::class) {
-    attrs.name = name
+fun RBuilder.join() = child(Join::class) {}
+fun toJoinState() {
+    appState = appState.changeState(ApplicationState.JOIN)
+}
+
+fun joinGame(gameCode: String) {
+    socketClient.run {
+        sendMessage(LocationListRequest().serialize())
+        sendMessage(JoinGameRequest(appState.userInfo.userId, appState.userInfo.userName, gameCode).serialize())
+    }
 }

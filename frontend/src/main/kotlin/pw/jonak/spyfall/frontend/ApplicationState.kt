@@ -1,8 +1,10 @@
 package pw.jonak.spyfall.frontend
 
 enum class ApplicationState {
-    START,
+    LOGIN,
+    MAINMENU,
     JOIN,
     LOBBY,
-    GAME
+    GAME,
+    ADMINMENU
 }

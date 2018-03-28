@@ -1,8 +1,11 @@
 apply plugin: 'kotlin2js'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'kotlin-platform-js'
-apply plugin: 'kotlin-dce-js'
+//apply plugin: 'kotlin-dce-js'
 apply plugin: 'org.jetbrains.kotlin.frontend'
+apply plugin: 'com.moowork.node'
+//apply plugin: "org.kravemir.gradle.sass"
+
 
 repositories {
     jcenter()
@@ -20,30 +23,13 @@ dependencies {
     expectedBy project(':common')
 }
 
-
-//task assembleWeb(type: Sync) {
-//    configurations.compile.each { File file ->
-//        from(zipTree(file.absolutePath), {
-//            includeEmptyDirs = false
-//            include { fileTreeElement ->
-//                def path = fileTreeElement.path
-//                path.endsWith(".js") && (path.startsWith("META-INF/resources/") ||
-//                        !path.startsWith("META-INF/"))
-//            }
-//        })
+//sass {
+//    main {
+//        srcDir = file("$projectDir/src/main/resources/css")
+//        outDir = file("$projectDir/src/main/resources/css")
 //    }
-//    from compileKotlin2Js.destinationDir
-//    into "${buildDir}/web/lib"
-//
-//    dependsOn classes
 //}
-//
-//task copyResource(type: Copy) {
-//    from "src/main/resources"
-//    into "${buildDir}/web"
-//}
-//assemble.dependsOn assembleWeb
-//assemble.dependsOn copyResource
+
 
 compileKotlin2Js {
     kotlinOptions {
@@ -55,15 +41,19 @@ compileKotlin2Js {
     }
 }
 
+
+
 boolean isProduction = false
 
-runDceKotlinJs {
-    dceOptions {
-        if(!isProduction) {
-            devMode = true
-        }
-    }
-}
+//runDceKotlinJs {
+//    dceOptions {
+//        if(!isProduction) {
+//            devMode = true
+//        }
+//    }
+//    keep "kotlin.math"
+//    keep "kotlin"
+//}
 
 kotlinFrontend {
     downloadNodeJsVersion = 'latest'
@@ -72,7 +62,6 @@ kotlinFrontend {
         dependency("react", "16.2.0")
         dependency("react-dom", "16.2.0")
         dependency "uglifyjs-webpack-plugin"
-        dependency "mprogress"
         devDependency "style-loader"
     }
 
@@ -82,6 +71,8 @@ kotlinFrontend {
     } else {
         define 'PRODUCTION', false
     }
+
+    define 'PUBLIC', true
 
     webpackBundle {
         bundleName = "FrontendMain"
