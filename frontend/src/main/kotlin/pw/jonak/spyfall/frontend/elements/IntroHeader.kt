@@ -21,6 +21,7 @@ class IntroHeader(props: IntroProps) : RComponent<IntroProps, RState>(props) {
             span(classes = "col s12 center-align") {
                 props.before(this)
             }
+            span(classes = "accessibilityonly") { +" " }
             span(classes = "col s12 intro-header center-align") {
                 attrs["style"] = json("width" to "100%")
                 +"Welcome to Spyfall!"

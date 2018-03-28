@@ -14,7 +14,10 @@ import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
-import react.dom.*
+import react.dom.button
+import react.dom.div
+import react.dom.form
+import react.dom.span
 
 
 interface MainMenuProps : RProps {
@@ -25,7 +28,7 @@ class MainMenu(props: MainMenuProps) : RComponent<MainMenuProps, RState>(props) 
 
     override fun RBuilder.render() {
         span(classes = "accessibilityonly") {
-            +"Main Menu"
+            +"Page Main Screen"
         }
         button(classes = "linkbutton") {
             +"Logout"
@@ -46,7 +49,7 @@ class MainMenu(props: MainMenuProps) : RComponent<MainMenuProps, RState>(props) 
                 }
             }
             div(classes = "row") {
-                a(classes = "btn col s12 l5 waves-effect waves-light") {
+                button(classes = "btn col s12 l5 waves-effect waves-light") {
                     +"Join a Game"
                     attrs {
                         id = "joinButton"
@@ -55,7 +58,7 @@ class MainMenu(props: MainMenuProps) : RComponent<MainMenuProps, RState>(props) 
                         }
                     }
                 }
-                a(classes = "btn col s12 l5 offset-l2 waves-effect waves-light") {
+                button(classes = "btn col s12 l5 offset-l2 waves-effect waves-light") {
                     +"Create a game"
                     attrs {
                         id = "createButton"

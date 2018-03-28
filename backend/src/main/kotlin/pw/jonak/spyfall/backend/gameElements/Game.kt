@@ -7,7 +7,7 @@ import java.util.*
 
 const val spyRoleId = "spy"
 
-class Game(val code: String, val gameLength: Duration = Duration.ofMinutes(8)) {
+class Game(val code: String, val gameLength: Duration = Duration.ofMinutes(7)) {
     private val _users = HashSet<User>()
     val users: Set<User> get() = _users
 

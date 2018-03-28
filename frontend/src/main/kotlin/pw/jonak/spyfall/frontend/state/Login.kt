@@ -36,13 +36,14 @@ class Login(props: LoginProps) : RComponent<LoginProps, LoginState>(props) {
     }
 
     override fun RBuilder.render() {
-        introHeader({}, {})
         span(classes = "accessibilityonly") {
-            +"Login Menu"
+            +"Page Login Screen"
         }
+        introHeader({}, {})
         form {
             attrs {
                 id = "loginForm"
+                autoComplete = false
                 onSubmitFunction = {
                     it.preventDefault()
                     val name = (document.getElementById("username") as HTMLInputElement).value
@@ -54,15 +55,19 @@ class Login(props: LoginProps) : RComponent<LoginProps, LoginState>(props) {
             }
             div(classes = "row") {
                 div(classes = "s12 input-field") {
+                    label {
+                        +"Name"
+                        attrs["htmlFor"] = "username"
+                        attrs {
+                            id = "usernamelabel"
+                        }
+                    }
                     input(type = InputType.text, classes = "login") {
                         attrs {
                             id = "username"
                             placeholder = props.name
                         }
-                    }
-                    label {
-                        +"Name"
-                        attrs["htmlFor"] = "username"
+                        attrs["aria-labelledby"] = "usernamelabel"
                     }
                 }
 

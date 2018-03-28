@@ -22,10 +22,11 @@ class Join : RComponent<RProps, RState>() {
 
     override fun RBuilder.render() {
         span(classes = "accessibilityonly") {
-            +"Join Menu"
+            +"Page Join Screen"
         }
         form {
             attrs {
+                autoComplete = false
                 onSubmitFunction = {
                     it.preventDefault()
                     val gameCode = (document.getElementById("gamecode") as? HTMLInputElement)?.value
@@ -37,14 +38,18 @@ class Join : RComponent<RProps, RState>() {
             }
             div(classes = "row") {
                 div(classes = "s12 input-field") {
+                    label {
+                        +"Game Code"
+                        attrs["htmlFor"] = "gamecode"
+                        attrs {
+                            id = "gamecodelabel"
+                        }
+                    }
                     input(type = InputType.text, classes = "login") {
                         attrs {
                             id = "gamecode"
                         }
-                    }
-                    label {
-                        +"Game Code"
-                        attrs["htmlFor"] = "gamecode"
+                        attrs["aria-labelledby"] = "gamecodelabel"
                     }
                 }
 
@@ -54,7 +59,7 @@ class Join : RComponent<RProps, RState>() {
                         id = "joinButton"
                     }
                 }
-                span(classes = "waves-effect waves-light btn grey col s12 offset-m1 m3 offset-l1 l1") {
+                button(classes = "waves-effect waves-light btn grey col s12 offset-m1 m3 offset-l1 l1") {
                     +"Back"
                     attrs {
                         onClickFunction = {

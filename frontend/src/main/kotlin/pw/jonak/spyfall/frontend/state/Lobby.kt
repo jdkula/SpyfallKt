@@ -4,6 +4,7 @@ import kotlinx.html.js.onClickFunction
 import pw.jonak.spyfall.common.*
 import pw.jonak.spyfall.frontend.MessageHandler
 import pw.jonak.spyfall.frontend.appState
+import pw.jonak.spyfall.frontend.elements.accessibleBullet
 import pw.jonak.spyfall.frontend.socketClient
 import react.RBuilder
 import react.RComponent
@@ -19,7 +20,7 @@ interface LobbyProps : RProps {
 class Lobby(props: LobbyProps) : RComponent<LobbyProps, RState>(props) {
     override fun RBuilder.render() {
         span(classes = "accessibilityonly") {
-            +"Pre game Lobby"
+            +"Page Pre-Game Lobby"
         }
         div(classes = "row") {
             span(classes = "col s12 center-align") {
@@ -36,7 +37,12 @@ class Lobby(props: LobbyProps) : RComponent<LobbyProps, RState>(props) {
             +"Players:"
         }
         ul(classes = "collection") {
-            props.lobbyInfo.userNameList.map { li(classes = "collection-item center-align") { +it } }
+            props.lobbyInfo.userNameList.map {
+                li(classes = "collection-item center-align") {
+                    accessibleBullet()
+                    +it
+                }
+            }
         }
         div(classes = "row") {
             button(classes = "col s12 m8 l10 btn waves-effect waves-light") {

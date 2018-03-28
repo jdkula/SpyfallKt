@@ -3,6 +3,7 @@ package pw.jonak.spyfall.frontend.state
 import kotlinx.html.js.onClickFunction
 import pw.jonak.spyfall.common.*
 import pw.jonak.spyfall.frontend.appState
+import pw.jonak.spyfall.frontend.elements.accessibleBullet
 import pw.jonak.spyfall.frontend.elements.alert
 import pw.jonak.spyfall.frontend.socketClient
 import react.*
@@ -12,8 +13,6 @@ import kotlin.js.Date
 import kotlin.js.json
 import kotlin.math.max
 import kotlin.math.round
-
-fun abr(): ReactElement = RBuilder().br { attrs["aria-hidden"] = true }
 
 interface GameProps : RProps {
     var info: LobbyInformation
@@ -57,6 +56,10 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
                 setState {
                     alertRendered = true
                 }
+            } else if((tl + 3) % 60 > 6 && state.alertRendered) {
+                setState {
+                    alertRendered = false
+                }
             }
         }, 1000)
     }
@@ -67,7 +70,7 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
 
     override fun RBuilder.render() {
         span(classes = "accessibilityonly") {
-            +"In Game"
+            +"Page Game Screen"
         }
         div(classes = "row") {
             span(classes = "col s12 center-align") {
@@ -93,12 +96,16 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
                 }
             }
         }
+        p(classes = "accessibilityonly") {
+            +"First player is ${props.info.userNameList[props.game.firstPlayer]}"
+        }
         p {
             +"Player list:"
         }
         ul(classes = "collection") {
             props.info.userNameList.mapIndexed { index, value ->
                 li(classes = "collection-item center-align") {
+                    accessibleBullet()
                     +value
                     if (index == props.game.firstPlayer) {
                         sup(classes = "firstplayer") { i { +" 1st" } }
@@ -110,7 +117,10 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
             +"Possible locations:"
         }
         ul(classes = "collection") {
-            props.possibleLocations.map { li(classes = "collection-item") { +it } }
+            props.possibleLocations.map { li(classes = "collection-item") {
+                accessibleBullet()
+                +it
+            } }
         }
         p {
             +"Time Left: ${state.timeLeft}"
@@ -157,10 +167,9 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
 
 
 fun RBuilder.game(info: LobbyInformation, game: GameInformation, possibleLocations: List<String>) = child(Game::class) {
-    println("INFO: ${info.serialize()} || POSSIBLE LOCATIONS: ${possibleLocations}")
     attrs.info = info
     attrs.game = game
-    attrs.possibleLocations = possibleLocations
+    attrs.possibleLocations = possibleLocations.sorted()
 }
 
 fun toGameState() {
