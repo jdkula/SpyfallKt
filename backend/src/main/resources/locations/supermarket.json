@@ -1,0 +1,12 @@
+{
+  "id": "supermarket",
+  "roles": [
+    "cashier",
+    "butcher",
+    "janitor",
+    "security guard",
+    "food sample demonstrator",
+    "shelf stocker",
+    "customer"
+  ]
+}

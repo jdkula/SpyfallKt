@@ -71,12 +71,14 @@ data class GameInformation(
         @SerialName("first_player") val firstPlayer: Int,
         val location: String,
         val role: String,
-        @SerialName("pause_time") @Optional val pauseTime: Long? = null
+        @SerialName("pause_time") @Optional val pauseTime: Int? = null
 ) : SpyfallMessage {
     @SerialName("message_type")
     override val messageType = Companion.messageTypeName
     @SerialName("sender_side")
     override val senderSide = Side.SERVER
+
+    val isPaused: Boolean get() = pauseTime != null
 
     companion object {
         const val messageTypeName = "game_information"
@@ -135,7 +137,8 @@ class CreateGameRequest(
 }
 
 /**
- * Requests that a given user join the given game code.
+ * Requests that a given user join the given game. If the user is already in the game,
+ * has no special behavior.
  * Responds with [LobbyInformation] if the game was joined.
  * Responds with [GameNotFound] if the game wasn't found.
  */
@@ -176,7 +179,8 @@ class LeaveGameRequest(
 
 /**
  * Requests that a given game is started.
- * Responds with [LobbyInformation]
+ * Responds with [LobbyInformation] if it was started,
+ * or [ActionFailure] if the game was already started.
  */
 @Serializable
 class StartGameRequest(
@@ -195,7 +199,8 @@ class StartGameRequest(
 
 /**
  * Requests that a given game is paused.
- * Responds with [LobbyInformation]
+ * Responds with [LobbyInformation] if it was paused,
+ * or [ActionFailure] if the game was already paused.
  */
 @Serializable
 class PauseGameRequest(
@@ -214,7 +219,8 @@ class PauseGameRequest(
 
 /**
  * Requests that a given game is unpaused.
- * Responds with [LobbyInformation]
+ * Responds with [LobbyInformation] if it was unpaused,
+ * or [ActionFailure] if it wasn't paused in the first place.
  */
 @Serializable
 class UnpauseGameRequest(
@@ -233,7 +239,8 @@ class UnpauseGameRequest(
 
 /**
  * Requests that a given game is stopped.
- * Responds with [LobbyInformation].
+ * Responds with [LobbyInformation] if successful,
+ * or [ActionFailure] if the game wasn't started.
  */
 @Serializable
 class StopGameRequest(

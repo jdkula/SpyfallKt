@@ -10,6 +10,7 @@ import react.dom.div
 import react.dom.render
 import react.dom.unmountComponentAtNode
 import kotlin.browser.document
+import kotlin.js.Date
 import kotlin.properties.Delegates
 
 const val host = "localhost:8080"
@@ -36,6 +37,13 @@ fun main(args: Array<String>) {
         socketClient.onOpen {
             println("Reconnected!")
             unmountComponentAtNode(barDiv)
+            if("userInfo" in CookieManager) {
+                println(CookieManager["userInfo"])
+                val userInfo = CookieManager["userInfo"]?.deserialize()
+                if(userInfo is UserRegistrationInformation) {
+                    socketClient.sendMessage(EnsureUserRegistration(userInfo.userId, userInfo.userName).serialize())
+                }
+            }
         }
 
         socketClient.onClose {
@@ -58,15 +66,33 @@ fun main(args: Array<String>) {
                     // We've now logged in!
                     println("Logged In!")
                     appState = appState.changeState(MAINMENU)
+                    val now = Date()
+                    val expiry = Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, now.getHours(), now.getMinutes(), now.getSeconds())
+                    CookieManager.add("userInfo" to appState.userInfo.serialize(), expiry)
+                    if("currentLobby" in CookieManager) {
+                        println(CookieManager["currentLobby"])
+                        val lobbyInfo = CookieManager["currentLobby"]?.deserialize()
+                        if(lobbyInfo is LobbyInformation && appState.userInfo != dummyUser) {
+                            socketClient.sendMessage(JoinGameRequest(appState.userInfo.userId, appState.userInfo.userName, lobbyInfo.gameCode).serialize())
+                        }
+                    }
                 }
             }
             if(msg is LobbyInformation) {
-                appState = appState.changeLobby(msg)
-                if(msg.gameHasStarted) {
-                    appState = appState.changeState(GAME)
+                if(appState.state != LOBBY && appState.state != GAME) {
                     socketClient.sendMessage(LocationListRequest().serialize())
+                }
+                val now = Date()
+                val expiry = Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, now.getHours(), now.getMinutes(), now.getSeconds())
+                CookieManager.add("currentLobby" to msg.serialize(), expiry)
+                appState = appState.changeLobby(msg)
+                appState = if(msg.gameHasStarted) {
+                    if(appState.state != GAME) {
+                        socketClient.sendMessage(LocationListRequest().serialize())
+                    }
+                    appState.changeState(GAME)
                 } else {
-                    appState = appState.changeState(LOBBY)
+                    appState.changeState(LOBBY)
                 }
             }
             if(msg is LocationListAnswer) {

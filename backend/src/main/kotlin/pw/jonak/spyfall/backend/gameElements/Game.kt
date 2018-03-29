@@ -18,7 +18,7 @@ class Game(val code: String, val gameLength: Duration = Duration.ofMinutes(7)) {
 
     var startTime: Int? = null
         private set
-    var pauseTime: Long? = null
+    var pauseTime: Int? = null
         private set
 
     var firstPlayer: User? = null
@@ -27,6 +27,7 @@ class Game(val code: String, val gameLength: Duration = Duration.ofMinutes(7)) {
         private set
 
     val gameHasStarted: Boolean get() = startTime != null
+    val isPaused: Boolean get() = pauseTime != null
 
     override fun equals(other: Any?): Boolean =
             when (other) {
@@ -88,11 +89,15 @@ class Game(val code: String, val gameLength: Duration = Duration.ofMinutes(7)) {
     }
 
     fun pause() {
-        pauseTime = Calendar.getInstance().timeInMillis
+        pauseTime = (Calendar.getInstance().timeInMillis / 1000L).toInt()
     }
 
     fun unpause() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val now = (Calendar.getInstance().timeInMillis / 1000L).toInt()
+        pauseTime?.let {
+            startTime = startTime?.plus(now - it)
+        }
+        pauseTime = null
     }
 
     fun stop() {

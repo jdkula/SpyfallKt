@@ -8,7 +8,7 @@ import java.io.File
 class Location(val id: String, val roles: List<String>) {
 
     override fun toString(): String {
-        return "pw.jonak.spyfall.backend.GameElement.Location $id: $roles"
+        return "Location $id: $roles"
     }
 
     companion object {

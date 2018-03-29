@@ -8,11 +8,8 @@ import org.w3c.dom.HTMLInputElement
 import pw.jonak.spyfall.common.EnsureUserRegistration
 import pw.jonak.spyfall.common.UserRegistrationRequest
 import pw.jonak.spyfall.common.serialize
-import pw.jonak.spyfall.frontend.ApplicationState
-import pw.jonak.spyfall.frontend.appState
-import pw.jonak.spyfall.frontend.dummyUser
+import pw.jonak.spyfall.frontend.*
 import pw.jonak.spyfall.frontend.elements.introHeader
-import pw.jonak.spyfall.frontend.socketClient
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -109,5 +106,6 @@ fun register(name: String) {
 }
 
 fun toLoginState() {
+    CookieManager.delete("userInfo")
     appState = appState.changeUserInfo(dummyUser).changeState(ApplicationState.LOGIN).changeLobby(null).changeLocations(null)
 }

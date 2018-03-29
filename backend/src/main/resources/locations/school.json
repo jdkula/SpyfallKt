@@ -1,0 +1,12 @@
+{
+  "id": "school",
+  "roles": [
+    "gym teacher",
+    "principal",
+    "security guard",
+    "janitor",
+    "cafeteria lady",
+    "maintenance man",
+    "student"
+  ]
+}

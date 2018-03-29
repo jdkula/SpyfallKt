@@ -1,0 +1,12 @@
+{
+  "id": "hotel",
+  "roles": [
+    "doorman",
+    "security guard",
+    "manager",
+    "housekeeper",
+    "bartender",
+    "bellman",
+    "customer"
+  ]
+}

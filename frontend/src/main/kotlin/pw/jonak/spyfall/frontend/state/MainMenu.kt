@@ -7,6 +7,7 @@ import pw.jonak.spyfall.common.CreateGameRequest
 import pw.jonak.spyfall.common.LocationListRequest
 import pw.jonak.spyfall.common.serialize
 import pw.jonak.spyfall.frontend.ApplicationState
+import pw.jonak.spyfall.frontend.CookieManager
 import pw.jonak.spyfall.frontend.appState
 import pw.jonak.spyfall.frontend.elements.introHeader
 import pw.jonak.spyfall.frontend.socketClient
@@ -78,6 +79,7 @@ fun RBuilder.mainMenu(name: String) = child(MainMenu::class) {
 }
 
 fun toMainMenu() {
+    CookieManager.delete("currentLobby")
     appState = appState.changeState(ApplicationState.MAINMENU)
 }
 

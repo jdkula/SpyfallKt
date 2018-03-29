@@ -1,0 +1,12 @@
+{
+  "id": "military base",
+  "roles": [
+    "deserter",
+    "colonel",
+    "medic",
+    "sniper",
+    "officer",
+    "tank engineer",
+    "soldier"
+  ]
+}

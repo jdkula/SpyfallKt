@@ -1,0 +1,12 @@
+{
+  "id": "restaurant",
+  "roles": [
+    "musician",
+    "bouncer",
+    "hostess",
+    "head chef",
+    "food critic",
+    "waiter",
+    "customer"
+  ]
+}

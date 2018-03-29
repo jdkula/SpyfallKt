@@ -15,6 +15,7 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.readText
 import io.ktor.websocket.webSocket
+import kotlinx.coroutines.experimental.channels.ClosedSendChannelException
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.serialization.json.JSON
 import pw.jonak.spyfall.common.ServerShutdownOK
@@ -67,6 +68,8 @@ fun main(args: Array<String>) {
                         }
                     }
                 } catch (ex: IOException) {
+                    println("${userId ?: "Someone"}'s connection closed unexpectedly.")
+                } catch (ex: ClosedSendChannelException) {
                     println("${userId ?: "Someone"}'s connection closed unexpectedly.")
                 } finally {
                     userId?.let { server.userLeave(it, this) }

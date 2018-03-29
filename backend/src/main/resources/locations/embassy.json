@@ -1,0 +1,12 @@
+{
+  "id": "embassy",
+  "roles": [
+    "security guard",
+    "secretary",
+    "ambassador",
+    "tourist",
+    "refugee",
+    "diplomat",
+    "government official"
+  ]
+}

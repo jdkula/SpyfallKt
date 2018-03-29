@@ -35,4 +35,8 @@
   color: darkgray;
   font-style: italic; }
 
+.crossedoff {
+  text-decoration-line: line-through;
+  color: gray; }
+
 /*# sourceMappingURL=index.css.map */

@@ -1,0 +1,12 @@
+{
+  "id": "space station",
+  "roles": [
+    "engineer",
+    "alien",
+    "pilot",
+    "commander",
+    "scientist",
+    "doctor",
+    "space tourist"
+  ]
+}

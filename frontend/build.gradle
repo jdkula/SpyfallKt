@@ -43,7 +43,7 @@ compileKotlin2Js {
 
 
 
-boolean isProduction = false
+boolean isProduction = true
 
 //runDceKotlinJs {
 //    dceOptions {

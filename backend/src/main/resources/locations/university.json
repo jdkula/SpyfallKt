@@ -1,0 +1,12 @@
+{
+  "id": "university",
+  "roles": [
+    "graduate student",
+    "professor",
+    "dean",
+    "psychologist",
+    "maintenance man",
+    "janitor",
+    "student"
+  ]
+}

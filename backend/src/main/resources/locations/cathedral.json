@@ -1,0 +1,12 @@
+{
+  "id": "cathedral",
+  "roles": [
+    "priest",
+    "beggar",
+    "sinner",
+    "tourist",
+    "sponsor",
+    "chorister",
+    "parishoner"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "theater",
+  "roles": [
+    "coat check lady",
+    "prompter",
+    "cashier",
+    "director",
+    "actor",
+    "crew man",
+    "audience member"
+  ]
+}

@@ -5,6 +5,7 @@ import pw.jonak.spyfall.common.*
 import pw.jonak.spyfall.frontend.appState
 import pw.jonak.spyfall.frontend.elements.accessibleBullet
 import pw.jonak.spyfall.frontend.elements.alert
+import pw.jonak.spyfall.frontend.elements.listEntry
 import pw.jonak.spyfall.frontend.socketClient
 import react.*
 import react.dom.*
@@ -24,6 +25,7 @@ interface GameState : RState {
     var timeLeft: String
     var intervalId: Int
     var alertRendered: Boolean
+    var gameWasUnpaused: Boolean
 }
 
 class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
@@ -40,10 +42,11 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
         return "$mstr:$sstr"
     }
 
-    fun getTimeRemaining(inputTime: Double = Date().getTime()): Int = max(0, -(round(inputTime / 1000).toInt() - (props.game.startTime + props.game.gameLength)))
+    fun getTimeRemaining(inputTime: Double = props.game.pauseTime?.toDouble() ?: (Date().getTime() / 1000)): Int = max(0, -(round(inputTime).toInt() - (props.game.startTime + props.game.gameLength)))
 
     override fun GameState.init(props: GameProps) {
         alertRendered = false
+        gameWasUnpaused = false
         timeLeft = sToTime(getTimeRemaining())
         intervalId = window.setInterval({
             setState {
@@ -116,14 +119,14 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
         p {
             +"Possible locations:"
         }
-        ul(classes = "collection") {
-            props.possibleLocations.map { li(classes = "collection-item") {
+        ul(classes = "collection row") {
+            props.possibleLocations.map { listEntry(setOf("col", "s6", "collection-item")) {
                 accessibleBullet()
                 +it
             } }
         }
         p {
-            +"Time Left: ${state.timeLeft}"
+            +"${if(props.game.isPaused) "PAUSED: " else "Time Left: "} ${state.timeLeft}"
             attrs["aria-live"] = "off"
             attrs["role"] = "timer"
         }
@@ -135,13 +138,24 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
                 alert("$minsLeft minute${if (minsLeft != 1) "s" else ""} left!")
             }
         }
+        if(props.game.isPaused) {
+            alert("Game was paused")
+        } else if(state.gameWasUnpaused) {
+            alert("Game was unpaused")
+        }
 
         div(classes = "row") {
+            attrs["aria-live"] = "polite"
             button(classes = "col s12 btn waves-effect waves-light") {
-                +"Pause"
+                +if(props.game.isPaused) "Unpause" else "Pause"
                 attrs {
                     onClickFunction = {
-                        pauseGame(props.info.gameCode)
+                        if(props.game.isPaused) {
+                            unpauseGame(props.info.gameCode)
+                            state.gameWasUnpaused = true
+                        } else {
+                            pauseGame(props.info.gameCode)
+                        }
                     }
                 }
             }
@@ -184,7 +198,11 @@ fun toGameState() {
 }
 
 fun pauseGame(gameCode: String) {
+    socketClient.sendMessage(PauseGameRequest(appState.userInfo.userId, gameCode).serialize())
+}
 
+fun unpauseGame(gameCode: String) {
+    socketClient.sendMessage(UnpauseGameRequest(appState.userInfo.userId, gameCode).serialize())
 }
 
 fun stopGame(gameCode: String) {

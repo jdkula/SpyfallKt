@@ -1,0 +1,12 @@
+{
+  "id": "ocean liner",
+  "roles": [
+    "cook",
+    "captain",
+    "bartender",
+    "musician",
+    "waiter",
+    "mechanic",
+    "rich passenger"
+  ]
+}

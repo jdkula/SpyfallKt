@@ -1,0 +1,12 @@
+{
+  "id": "passenger train",
+  "roles": [
+    "mechanic",
+    "border patrol",
+    "train attendant",
+    "restaurant chef",
+    "train driver",
+    "stoker",
+    "passenger"
+  ]
+}

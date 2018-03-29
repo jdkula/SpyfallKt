@@ -63,37 +63,56 @@ class SpyfallGameServer {
         }
     }
 
-    suspend fun startGame(request: StartGameRequest) {
-        notifyWithGame(request.gameCode) {
-            start()
+    suspend fun startGame(request: StartGameRequest): SpyfallMessage? {
+        return notifyWithGame(request.gameCode) {
+            if (gameHasStarted) {
+                ActionFailure("Game already started")
+            } else {
+                start()
+                null
+            }
         }
     }
 
-    suspend fun pauseGame(request: PauseGameRequest) {
-        notifyWithGame(request.gameCode) {
-            pause()
+    suspend fun pauseGame(request: PauseGameRequest): SpyfallMessage? {
+        return notifyWithGame(request.gameCode) {
+            if (isPaused) {
+                ActionFailure("Game already paused")
+            } else {
+                pause()
+                null
+            }
         }
     }
 
-    suspend fun unpauseGame(request: UnpauseGameRequest) {
-        notifyWithGame(request.gameCode) {
-            unpause()
+    suspend fun unpauseGame(request: UnpauseGameRequest): SpyfallMessage? {
+        return notifyWithGame(request.gameCode) {
+            if (isPaused) {
+                unpause()
+                null
+            } else {
+                ActionFailure("Game not paused")
+            }
         }
     }
 
-    suspend fun stopGame(request: StopGameRequest): Acknowledged {
-        notifyWithGame(request.gameCode) {
-            stop()
+    suspend fun stopGame(request: StopGameRequest): SpyfallMessage? {
+        return notifyWithGame(request.gameCode) {
+            if (gameHasStarted) {
+                stop()
+                Acknowledged(request.messageType)
+            } else {
+                ActionFailure("Game not started")
+            }
         }
-        return Acknowledged(request.messageType)
     }
 
-    private suspend fun notifyWithGame(code: String, doThis: Game.() -> Unit) {
-        gameStore.games[code]?.run {
-            doThis()
-            notifyUsers()
-        }
-    }
+    private suspend inline fun <T> notifyWithGame(code: String, doThis: Game.() -> T): T? =
+            gameStore.games[code]?.run {
+                val x = doThis()
+                notifyUsers()
+                x
+            }
 
     private suspend fun Game.notifyUsers() {
         users.forEach { user ->

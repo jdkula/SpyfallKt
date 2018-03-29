@@ -1,0 +1,12 @@
+{
+  "id": "day spa",
+  "roles": [
+    "stylist",
+    "masseuse",
+    "manicurist",
+    "makeup artist",
+    "dermatologist",
+    "beautician",
+    "customer"
+  ]
+}

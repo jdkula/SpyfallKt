@@ -1,0 +1,12 @@
+{
+  "id": "police station",
+  "roles": [
+    "detective",
+    "lawyer",
+    "journalist",
+    "criminalist",
+    "archivist",
+    "criminal",
+    "patrol officer"
+  ]
+}
