@@ -42,7 +42,8 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
         return "$mstr:$sstr"
     }
 
-    fun getTimeRemaining(inputTime: Double = props.game.pauseTime?.toDouble() ?: (Date().getTime() / 1000)): Int = max(0, -(round(inputTime).toInt() - (props.game.startTime + props.game.gameLength)))
+    fun getTimeRemaining(inputTime: Double = props.game.pauseTime?.toDouble()
+            ?: (Date().getTime() / 1000)): Int = max(0, -(round(inputTime).toInt() - (props.game.startTime + props.game.gameLength)))
 
     override fun GameState.init(props: GameProps) {
         alertRendered = false
@@ -59,7 +60,7 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
                 setState {
                     alertRendered = true
                 }
-            } else if((tl + 3) % 60 > 6 && state.alertRendered) {
+            } else if ((tl + 3) % 60 > 6 && state.alertRendered) {
                 setState {
                     alertRendered = false
                 }
@@ -99,8 +100,11 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
                 }
             }
         }
-        p(classes = "accessibilityonly") {
-            +"First player is ${props.info.userNameList[props.game.firstPlayer]}"
+        val firstInGame = props.game.firstPlayer >= 0 && props.game.firstPlayer < props.info.userNameList.size
+        if (firstInGame) {
+            p(classes = "accessibilityonly") {
+                +"First player is ${props.info.userNameList[props.game.firstPlayer]}"
+            }
         }
         p {
             +"Player list:"
@@ -120,13 +124,15 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
             +"Possible locations:"
         }
         ul(classes = "collection row") {
-            props.possibleLocations.map { listEntry(setOf("col", "s6", "collection-item")) {
-                accessibleBullet()
-                +it
-            } }
+            props.possibleLocations.map {
+                listEntry(setOf("col", "s6", "collection-item")) {
+                    accessibleBullet()
+                    +it
+                }
+            }
         }
         p {
-            +"${if(props.game.isPaused) "PAUSED: " else "Time Left: "} ${state.timeLeft}"
+            +"${if (props.game.isPaused) "PAUSED: " else "Time Left: "} ${state.timeLeft}"
             attrs["aria-live"] = "off"
             attrs["role"] = "timer"
         }
@@ -138,19 +144,19 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
                 alert("$minsLeft minute${if (minsLeft != 1) "s" else ""} left!")
             }
         }
-        if(props.game.isPaused) {
+        if (props.game.isPaused) {
             alert("Game was paused")
-        } else if(state.gameWasUnpaused) {
+        } else if (state.gameWasUnpaused) {
             alert("Game was unpaused")
         }
 
         div(classes = "row") {
             attrs["aria-live"] = "polite"
             button(classes = "col s12 btn waves-effect waves-light") {
-                +if(props.game.isPaused) "Unpause" else "Pause"
+                +if (props.game.isPaused) "Unpause" else "Pause"
                 attrs {
                     onClickFunction = {
-                        if(props.game.isPaused) {
+                        if (props.game.isPaused) {
                             unpauseGame(props.info.gameCode)
                             state.gameWasUnpaused = true
                         } else {

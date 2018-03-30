@@ -33,3 +33,12 @@ subprojects {
 
 group 'pw.jonak'
 version '0.1a-SNAPSHOT'
+
+task runAll(type: GradleBuild) {
+    tasks = [':frontend:bundleAll', ':backend:run']
+}
+
+configure(runAll) {
+    group = "run"
+    description = "Assembles and runs everything using ktor."
+}

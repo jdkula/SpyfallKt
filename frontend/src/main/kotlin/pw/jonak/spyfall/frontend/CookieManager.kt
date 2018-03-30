@@ -13,7 +13,7 @@ object CookieManager {
     }
 
     operator fun contains(key: String): Boolean {
-        return key in getCookies()
+        return (key in getCookies()).inlinePrint("$key in cookies? ")
     }
 
     operator fun get(key: String): String? {
@@ -32,9 +32,15 @@ object CookieManager {
         return document
                 .cookie
                 .split(";")
+                .map { it.trim() }
                 .filter { it.split("=").size == 2 }
                 .filter { it.split("=")[1] != "" }
                 .map { it.split("=")[0] to it.split("=")[1] }
                 .toMap()
+    }
+
+    private fun <T> T.inlinePrint(prefix: String = ""): T {
+        println("$prefix$this")
+        return this
     }
 }

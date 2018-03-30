@@ -43,7 +43,7 @@ compileKotlin2Js {
 
 
 
-boolean isProduction = true
+boolean isProduction = false
 
 //runDceKotlinJs {
 //    dceOptions {
@@ -85,4 +85,21 @@ kotlin {
     experimental {
         coroutines 'enable'
     }
+}
+
+task bundleAll(dependsOn: assemble) {
+    delete "$buildDir/WEB"
+    copy {
+        from "$buildDir/bundle"
+        into "$buildDir/WEB"
+    }
+    copy {
+        from "$projectDir/src/main/resources"
+        into "$buildDir/WEB"
+    }
+}
+
+configure(bundleAll) {
+    group = "build"
+    description = "Bundles all resources into the build dir -> WEB"
 }

@@ -36,7 +36,6 @@ fun main(args: Array<String>) {
 
         socketClient.onOpen {
             println("Reconnected!")
-            unmountComponentAtNode(barDiv)
             if("userInfo" in CookieManager) {
                 println(CookieManager["userInfo"])
                 val userInfo = CookieManager["userInfo"]?.deserialize()
@@ -44,6 +43,7 @@ fun main(args: Array<String>) {
                     socketClient.sendMessage(EnsureUserRegistration(userInfo.userId, userInfo.userName).serialize())
                 }
             }
+            unmountComponentAtNode(barDiv)
         }
 
         socketClient.onClose {

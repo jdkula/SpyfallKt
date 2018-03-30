@@ -2,6 +2,10 @@ package pw.jonak.spyfall.backend
 
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.content.default
+import io.ktor.content.files
+import io.ktor.content.static
+import io.ktor.content.staticRootFolder
 import io.ktor.features.CORS
 import io.ktor.http.ContentType
 import io.ktor.response.respondText
@@ -22,6 +26,7 @@ import pw.jonak.spyfall.common.ServerShutdownOK
 import pw.jonak.spyfall.common.UserRegistrationInformation
 import pw.jonak.spyfall.common.deserialize
 import pw.jonak.spyfall.common.serialize
+import java.io.File
 import java.io.IOException
 import java.time.Duration
 
@@ -88,6 +93,18 @@ fun main(args: Array<String>) {
                 post("shutdown") {
                     call.respondText(JSON.stringify(ServerShutdownOK()), ContentType.Application.Json)
                     System.exit(0)
+                }
+            }
+            static {
+                staticRootFolder = File("../frontend/build/WEB")
+                files("js")
+                files("css")
+                files(".")
+                default("index.html")
+                static("localization") {
+                    static("english") {
+                        files(".")
+                    }
                 }
             }
         }
