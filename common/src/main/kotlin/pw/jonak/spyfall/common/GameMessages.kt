@@ -22,6 +22,7 @@ import kotlinx.serialization.Serializable
 data class LobbyInformation(
         @SerialName("game_code") val gameCode: String,
         @SerialName("user_name_list") val userNameList: List<String>,
+        @SerialName("packet_id") val packetId: Int,
         @SerialName("game_info") @Optional val gameInformation: GameInformation? = null
 ) : SpyfallMessage {
     @SerialName("message_type")

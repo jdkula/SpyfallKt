@@ -8,7 +8,6 @@ import react.RProps
 import react.RState
 import react.dom.RDOMBuilder
 import react.dom.li
-import kotlin.js.json
 
 interface ListEntryState : RState {
     var checked: Boolean
@@ -16,7 +15,7 @@ interface ListEntryState : RState {
 
 interface ListEntryProps : RProps {
     var inner: RDOMBuilder<LI>.() -> Unit
-    var extraClasses: Set<String>
+    var extraClasses: String
 }
 
 class ListEntry(props: ListEntryProps) : RComponent<ListEntryProps, ListEntryState>(props) {
@@ -25,19 +24,29 @@ class ListEntry(props: ListEntryProps) : RComponent<ListEntryProps, ListEntrySta
     }
 
     override fun RBuilder.render() {
-        li(classes = "${props.extraClasses.joinToString(" ")} ${if(state.checked) "crossedoff" else ""}") {
-            props.inner(this)
-            attrs["style"] = json("cursor" to "pointer", "user-select" to "none")
-            attrs {
-                onClickFunction = {
-                    state.checked = !state.checked
+        if(state.checked) {
+            li(classes = "crossedoff listentry ${props.extraClasses}") {
+                props.inner(this)
+                attrs {
+                    onClickFunction = {
+                        state.checked = !state.checked
+                    }
+                }
+            }
+        } else {
+            li(classes = "listentry ${props.extraClasses}") {
+                props.inner(this)
+                attrs {
+                    onClickFunction = {
+                        state.checked = !state.checked
+                    }
                 }
             }
         }
     }
 }
 
-fun RBuilder.listEntry(classes: Set<String> = setOf(), inner: RDOMBuilder<LI>.() -> Unit) = child(ListEntry::class) {
+fun RBuilder.listEntry(classes: String = "", inner: RDOMBuilder<LI>.() -> Unit) = child(ListEntry::class) {
     attrs.inner = inner
     attrs.extraClasses = classes
 }

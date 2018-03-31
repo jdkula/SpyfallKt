@@ -1,0 +1,10 @@
+{
+  "location": "Hotel",
+  "doorman": "Doorman",
+  "security guard": "Security Guard",
+  "manager": "Manager",
+  "housekeeper": "Housekeeper",
+  "bartender": "Bartender",
+  "bellman": "Bellman",
+  "customer": "Customer"
+}

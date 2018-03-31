@@ -2,7 +2,6 @@ package pw.jonak.spyfall.frontend.state
 
 import kotlinx.html.InputType
 import kotlinx.html.id
-import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.onSubmitFunction
 import org.w3c.dom.HTMLInputElement
 import pw.jonak.spyfall.common.EnsureUserRegistration
@@ -34,7 +33,7 @@ class Login(props: LoginProps) : RComponent<LoginProps, LoginState>(props) {
 
     override fun RBuilder.render() {
         span(classes = "accessibilityonly") {
-            +"Page Login Screen"
+            +getLocalization("ui", "page login screen")
         }
         introHeader({}, {})
         form {
@@ -43,7 +42,7 @@ class Login(props: LoginProps) : RComponent<LoginProps, LoginState>(props) {
                 autoComplete = false
                 onSubmitFunction = {
                     it.preventDefault()
-                    val name = (document.getElementById("username") as HTMLInputElement).value
+                    val name = (document.getElementById("username") as HTMLInputElement).value.trim()
                     state.currentName = if (name.isNotEmpty()) name else if (props.name != defaultPlaceholder) props.name else ""
                     if (state.currentName.isNotEmpty()) {
                         register(state.currentName)
@@ -76,15 +75,15 @@ class Login(props: LoginProps) : RComponent<LoginProps, LoginState>(props) {
                 }
             }
         }
-        br { }
-        button {
-            +"Admin Actions"
-            attrs {
-                onClickFunction = {
-                    toAdminMenu()
-                }
-            }
-        }
+//        br { }
+//        button {
+//            +"Admin Actions"
+//            attrs {
+//                onClickFunction = {
+//                    toAdminMenu()
+//                }
+//            }
+//        }
     }
 }
 

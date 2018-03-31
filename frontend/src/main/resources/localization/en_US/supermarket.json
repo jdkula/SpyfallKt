@@ -1,0 +1,10 @@
+{
+  "location": "Supermarket",
+  "cashier": "Cashier",
+  "butcher": "Butcher",
+  "janitor": "Janitor",
+  "security guard": "Security Guard",
+  "food sample demonstrator": "Food Sample Demonstrator",
+  "shelf stocker": "Shelf Stocker",
+  "customer": "Customer"
+}

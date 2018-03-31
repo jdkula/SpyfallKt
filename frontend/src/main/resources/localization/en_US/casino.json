@@ -1,0 +1,10 @@
+{
+  "location": "Casino",
+  "bartender": "Bartender",
+  "head security guard": "Head Security Guard",
+  "bouncer": "Bouncer",
+  "manager": "Manager",
+  "hustler": "Hustler",
+  "dealer": "Dealer",
+  "gambler": "Gambler"
+}

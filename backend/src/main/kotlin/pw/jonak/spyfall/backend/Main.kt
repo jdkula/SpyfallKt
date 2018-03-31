@@ -6,8 +6,9 @@ import io.ktor.content.default
 import io.ktor.content.files
 import io.ktor.content.static
 import io.ktor.content.staticRootFolder
-import io.ktor.features.CORS
+import io.ktor.features.*
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.response.respondText
 import io.ktor.routing.post
 import io.ktor.routing.route
@@ -44,6 +45,20 @@ fun main(args: Array<String>) {
         }
         install(WebSockets) {
             pingPeriod = Duration.ofSeconds(5L)
+        }
+        install(StatusPages) {
+            status(HttpStatusCode.NotFound) {
+                call.respondText("Not found.")
+            }
+        }
+        install(Compression) {
+            gzip {
+                priority = 1.0
+            }
+            deflate {
+                priority = 10.0
+                minimumSize(1024)
+            }
         }
         routing {
 
@@ -102,7 +117,10 @@ fun main(args: Array<String>) {
                 files(".")
                 default("index.html")
                 static("localization") {
-                    static("english") {
+                    staticRootFolder = File("../frontend/build/WEB/localization")
+                    files(".")
+                    static("en_US") {
+                        staticRootFolder = File("../frontend/build/WEB/localization/en_US")
                         files(".")
                     }
                 }

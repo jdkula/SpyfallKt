@@ -1,10 +1,14 @@
 package pw.jonak.spyfall.frontend.state
 
 import kotlinx.html.js.onClickFunction
-import pw.jonak.spyfall.common.*
+import pw.jonak.spyfall.common.LobbyInformation
+import pw.jonak.spyfall.common.LobbyInformationRequest
+import pw.jonak.spyfall.common.StartGameRequest
+import pw.jonak.spyfall.common.serialize
 import pw.jonak.spyfall.frontend.MessageHandler
 import pw.jonak.spyfall.frontend.appState
 import pw.jonak.spyfall.frontend.elements.accessibleBullet
+import pw.jonak.spyfall.frontend.getLocalization
 import pw.jonak.spyfall.frontend.socketClient
 import react.RBuilder
 import react.RComponent
@@ -20,21 +24,21 @@ interface LobbyProps : RProps {
 class Lobby(props: LobbyProps) : RComponent<LobbyProps, RState>(props) {
     override fun RBuilder.render() {
         span(classes = "accessibilityonly") {
-            +"Page Pre-Game Lobby"
+            +getLocalization("ui", "page lobby")
         }
         div(classes = "row") {
             span(classes = "col s12 center-align") {
                 attrs["style"] = json("width" to "100%")
-                +"Game Code: "
+                +"${getLocalization("ui", "code")}: "
                 span(classes = "teletype") { +props.lobbyInfo.gameCode }
             }
             h4(classes = "col s12 center-align") {
                 attrs["style"] = json("width" to "100%")
-                +"Awaiting Players..."
+                +getLocalization("ui", "awaiting")
             }
         }
         p {
-            +"Players:"
+            +getLocalization("ui", "player list")
         }
         ul(classes = "collection") {
             props.lobbyInfo.userNameList.map {
@@ -45,21 +49,23 @@ class Lobby(props: LobbyProps) : RComponent<LobbyProps, RState>(props) {
             }
         }
         div(classes = "row") {
-            button(classes = "col s12 m8 l10 btn waves-effect waves-light") {
-                +"Start"
+            val disabled = props.lobbyInfo.userNameList.size < 3
+            button(classes = "col s12 m8 l10 btn waves-effect waves-light ${if(disabled) "disabled" else ""}") {
+                +if(disabled) getLocalization("ui", "need 3 players") else getLocalization("ui", "start game")
                 attrs {
                     onClickFunction = {
-                        startGame(props.lobbyInfo.gameCode)
+                        if(!disabled) {
+                            startGame(props.lobbyInfo.gameCode)
+                        }
                     }
                 }
             }
             button(classes = "col s12 offset-m1 m3 l1 offset-l1 grey btn waves-effect waves-light") {
-                +"Leave"
+                +getLocalization("ui", "leave")
                 attrs {
                     onClickFunction = {
-                        socketClient.sendMessage(LeaveGameRequest(appState.userInfo.userId, props.lobbyInfo.gameCode).serialize())
+                        leaveGame(props.lobbyInfo.gameCode)
                         toMainMenu()
-
                     }
                 }
             }

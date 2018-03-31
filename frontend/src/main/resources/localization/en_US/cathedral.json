@@ -1,0 +1,10 @@
+{
+  "location": "Cathedral",
+  "priest": "Priest",
+  "beggar": "Beggar",
+  "sinner": "Sinner",
+  "tourist": "Tourist",
+  "sponsor": "Sponsor",
+  "chorister": "Chorister",
+  "parishioner": "Parishioner"
+}

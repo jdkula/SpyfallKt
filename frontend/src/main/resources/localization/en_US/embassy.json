@@ -1,0 +1,10 @@
+{
+  "location": "Embassy",
+  "security guard": "Security Guard",
+  "secretary": "Secretary",
+  "ambassador": "Ambassador",
+  "tourist": "Tourist",
+  "refugee": "Refugee",
+  "diplomat": "Diplomat",
+  "government official": "Government Official"
+}

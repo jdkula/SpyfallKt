@@ -1,0 +1,10 @@
+{
+  "location": "Restaurant",
+  "musician": "Musician",
+  "bouncer": "Bouncer",
+  "hostess": "Hostess",
+  "head chef": "Head Chef",
+  "food critic": "Food Critic",
+  "waiter": "Waiter",
+  "customer": "Customer"
+}

@@ -1,0 +1,10 @@
+{
+  "location": "Space Station",
+  "engineer": "Engineer",
+  "alien": "Alien",
+  "pilot": "Pilot",
+  "commander": "Commander",
+  "scientist": "Scientist",
+  "doctor": "Doctor",
+  "space tourist": "Space Tourist"
+}

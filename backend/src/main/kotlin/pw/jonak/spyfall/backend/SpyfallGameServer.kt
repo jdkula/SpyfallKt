@@ -2,6 +2,8 @@ package pw.jonak.spyfall.backend
 
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
+import io.netty.util.internal.ConcurrentSet
+import kotlinx.coroutines.experimental.channels.ClosedSendChannelException
 import kotlinx.serialization.json.JSON
 import pw.jonak.spyfall.backend.gameElements.AllLocations
 import pw.jonak.spyfall.backend.gameElements.Game
@@ -17,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 class SpyfallGameServer {
     /** Matches user ID to a list of [WebSocketSession]s. */
-    val connectedUsers = ConcurrentHashMap<User, MutableList<WebSocketSession>>()
+    val connectedUsers = ConcurrentHashMap<User, ConcurrentSet<WebSocketSession>>()
 
     /** Stores all the users that have connected to this Game Server and haven't expired. */
     private val userStore = UserStore()
@@ -26,21 +28,22 @@ class SpyfallGameServer {
     private val gameStore = GameStore(userStore)
 
     /** Allows a user to join a game, adding them to the list of connected users that are notified of state changes. */
-    suspend fun joinGame(request: JoinGameRequest, session: WebSocketSession) {
+    suspend fun joinGame(request: JoinGameRequest, session: WebSocketSession): SpyfallMessage? {
         val userInfo = userStore.ensureRegistered(request.userId, request.userName)
-        connectedUsers.getOrElse(userInfo) {
-            val newList = ArrayList<WebSocketSession>()
-            connectedUsers[userInfo] = newList
-            newList
-        } += session
+
+        connectedUsers.getOrPut(userInfo) { ConcurrentSet() }.add(session)
+        println("${userInfo.userName}/${userInfo.id} connected: ${connectedUsers[userInfo]?.size} sessions.")
 
         try {
-            gameStore.joinGame(request.userId, request.gameCode.toLowerCase())?.notifyUsers()
+            val game = gameStore.joinGame(request.userId, request.gameCode.toLowerCase())
                     ?: throw GameNotFoundException(request.gameCode.toLowerCase())
             userInfo.currentGame = request.gameCode
-            println("Member ${userInfo.id} joined! \n ${connectedUsers.map { it.key to it.value.size }}")
+            println("Member ${userInfo.id} joined ${request.gameCode}!")
+            println("Current users: ${game.users}")
+            game.notifyUsers()
+            return game.getLobbyInfo(userInfo)
         } catch (gnfe: GameNotFoundException) {
-            session.send(Frame.Text(JSON.stringify(GameNotFound(request.gameCode.toLowerCase()))))
+            return GameNotFound(request.gameCode.toLowerCase())
         }
     }
 
@@ -116,9 +119,17 @@ class SpyfallGameServer {
 
     private suspend fun Game.notifyUsers() {
         users.forEach { user ->
+            print("Notifying user ${user.userName}")
             connectedUsers[user]?.forEach { session ->
-                session.send(Frame.Text(JSON.stringify(getLobbyInfo(user))))
+                print("~")
+                try {
+                    session.send(Frame.Text(JSON.stringify(getLobbyInfo(user))))
+                } catch (ex: ClosedSendChannelException) {
+                    println("$user's session unexpectedly disconnected!")
+                    userLeave(user.id, session)
+                }
             }
+            println()
         }
     }
 

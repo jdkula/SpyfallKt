@@ -1,0 +1,10 @@
+{
+  "location": "Military Base",
+  "deserter": "Deserter",
+  "colonel": "Colonel",
+  "medic": "Medic",
+  "sniper": "Sniper",
+  "officer": "Officer",
+  "tank engineer": "Tank Engineer",
+  "soldier": "Soldier"
+}

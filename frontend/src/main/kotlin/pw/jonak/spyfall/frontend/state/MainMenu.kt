@@ -2,22 +2,17 @@ package pw.jonak.spyfall.frontend.state
 
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
-import kotlinx.html.js.onSubmitFunction
 import pw.jonak.spyfall.common.CreateGameRequest
 import pw.jonak.spyfall.common.LocationListRequest
 import pw.jonak.spyfall.common.serialize
-import pw.jonak.spyfall.frontend.ApplicationState
-import pw.jonak.spyfall.frontend.CookieManager
-import pw.jonak.spyfall.frontend.appState
+import pw.jonak.spyfall.frontend.*
 import pw.jonak.spyfall.frontend.elements.introHeader
-import pw.jonak.spyfall.frontend.socketClient
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.dom.button
 import react.dom.div
-import react.dom.form
 import react.dom.span
 
 
@@ -29,10 +24,10 @@ class MainMenu(props: MainMenuProps) : RComponent<MainMenuProps, RState>(props) 
 
     override fun RBuilder.render() {
         span(classes = "accessibilityonly") {
-            +"Page Main Screen"
+            +getLocalization("ui", "page main screen")
         }
         button(classes = "linkbutton") {
-            +"Logout"
+            +getLocalization("ui", "logout")
             attrs {
                 id = "logoutButton"
                 onClickFunction = {
@@ -41,31 +36,24 @@ class MainMenu(props: MainMenuProps) : RComponent<MainMenuProps, RState>(props) 
             }
         }
         introHeader({
-            +"Hello, ${props.name}!"
+            +"${getLocalization("ui", "hello name")} ${props.name}!"
         }, {})
-        form {
-            attrs {
-                onSubmitFunction = {
-                    it.preventDefault()
-                }
-            }
-            div(classes = "row") {
-                button(classes = "btn col s12 l5 waves-effect waves-light") {
-                    +"Join a Game"
-                    attrs {
-                        id = "joinButton"
-                        onClickFunction = {
-                            toJoinState()
-                        }
+        div(classes = "row") {
+            button(classes = "btn col s12 l5 waves-effect waves-light") {
+                +getLocalization("ui", "join game")
+                attrs {
+                    id = "joinButton"
+                    onClickFunction = {
+                        toJoinState()
                     }
                 }
-                button(classes = "btn col s12 l5 offset-l2 waves-effect waves-light") {
-                    +"Create a game"
-                    attrs {
-                        id = "createButton"
-                        onClickFunction = {
-                            createGame()
-                        }
+            }
+            button(classes = "btn col s12 l5 offset-l2 waves-effect waves-light") {
+                +getLocalization("ui", "create game")
+                attrs {
+                    id = "createButton"
+                    onClickFunction = {
+                        createGame()
                     }
                 }
             }
@@ -80,6 +68,7 @@ fun RBuilder.mainMenu(name: String) = child(MainMenu::class) {
 
 fun toMainMenu() {
     CookieManager.delete("currentLobby")
+    appState = appState.changeLobby(null)
     appState = appState.changeState(ApplicationState.MAINMENU)
 }
 

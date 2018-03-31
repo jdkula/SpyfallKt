@@ -1,0 +1,10 @@
+{
+  "location": "Police Station",
+  "detective": "Detective",
+  "lawyer": "Lawyer",
+  "journalist": "Journalist",
+  "criminalist": "Criminalist",
+  "archivist": "Archivist",
+  "criminal": "Criminal",
+  "patrol officer": "Patrol Officer"
+}

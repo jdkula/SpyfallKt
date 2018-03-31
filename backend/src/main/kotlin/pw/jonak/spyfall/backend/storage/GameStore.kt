@@ -3,10 +3,11 @@ package pw.jonak.spyfall.backend.storage
 import pw.jonak.spyfall.backend.gameElements.Game
 import pw.jonak.spyfall.common.LobbyInformation
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 
 class GameStore(private val userStore: UserStore) {
-    private val _games = HashMap<String, Game>()
+    private val _games = ConcurrentHashMap<String, Game>()
     val games: Map<String, Game> get() = _games
 
     fun joinGame(userId: Int, gameCode: String): Game? {

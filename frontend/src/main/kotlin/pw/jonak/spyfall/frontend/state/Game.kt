@@ -6,6 +6,8 @@ import pw.jonak.spyfall.frontend.appState
 import pw.jonak.spyfall.frontend.elements.accessibleBullet
 import pw.jonak.spyfall.frontend.elements.alert
 import pw.jonak.spyfall.frontend.elements.listEntry
+import pw.jonak.spyfall.frontend.getLocalization
+import pw.jonak.spyfall.frontend.leftGameCode
 import pw.jonak.spyfall.frontend.socketClient
 import react.*
 import react.dom.*
@@ -74,44 +76,48 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
 
     override fun RBuilder.render() {
         span(classes = "accessibilityonly") {
-            +"Page Game Screen"
+            +getLocalization("ui", "page game")
         }
         div(classes = "row") {
             span(classes = "col s12 center-align") {
                 attrs["style"] = json("width" to "100%")
-                +"Game Code: "
+                +"${getLocalization("ui", "code")}: "
                 span(classes = "teletype") { +props.info.gameCode }
             }
             if (props.game.isSpy) {
                 h1(classes = "col s12 center-align") {
                     attrs["style"] = json("width" to "100%")
-                    +"You're the spy!"
+                    +getLocalization("ui", "you are the spy")
                 }
             } else {
                 h1(classes = "col s12 center-align") {
                     attrs["style"] = json("width" to "100%")
-                    +"Location: "
-                    b { +props.game.location }
+                    +"${getLocalization("ui", "location")} "
+                    b { +getLocalization("locations", props.game.location) }
                 }
                 h2(classes = "col s12 center-align") {
                     attrs["style"] = json("width" to "100%")
-                    +"Role: "
-                    b { +props.game.role }
+                    +"${getLocalization("ui", "role")} "
+                    b { +getLocalization(props.game.location, props.game.role) }
+                }
+                p(classes = "col s12 center-align") {
+                    attrs["style"] = json("width" to "100%")
+                    +getLocalization("ui", "you are not the spy")
                 }
             }
         }
         val firstInGame = props.game.firstPlayer >= 0 && props.game.firstPlayer < props.info.userNameList.size
         if (firstInGame) {
             p(classes = "accessibilityonly") {
-                +"First player is ${props.info.userNameList[props.game.firstPlayer]}"
+                +"${getLocalization("ui", "first accessible")} ${props.info.userNameList[props.game.firstPlayer]}"
             }
         }
         p {
-            +"Player list:"
+            +getLocalization("ui", "player list")
         }
         ul(classes = "collection") {
             props.info.userNameList.mapIndexed { index, value ->
-                li(classes = "collection-item center-align") {
+                listEntry("collection-item center-align") {
                     accessibleBullet()
                     +value
                     if (index == props.game.firstPlayer) {
@@ -121,18 +127,18 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
             }
         }
         p {
-            +"Possible locations:"
+            +getLocalization("ui", "location list")
         }
         ul(classes = "collection row") {
-            props.possibleLocations.map {
-                listEntry(setOf("col", "s6", "collection-item")) {
+            props.possibleLocations.map { location ->
+                listEntry("col s6 collection-item") {
                     accessibleBullet()
-                    +it
+                    +getLocalization("locations", location)
                 }
             }
         }
         p {
-            +"${if (props.game.isPaused) "PAUSED: " else "Time Left: "} ${state.timeLeft}"
+            +"${if (props.game.isPaused) "${getLocalization("ui", "paused")}: " else "${getLocalization("ui", "Time Left")}: "} ${state.timeLeft}"
             attrs["aria-live"] = "off"
             attrs["role"] = "timer"
         }
@@ -141,19 +147,19 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
             if (getTimeRemaining() == 0) {
                 alert("Time is up!")
             } else {
-                alert("$minsLeft minute${if (minsLeft != 1) "s" else ""} left!")
+                alert("$minsLeft ${getLocalization("ui", "minute")}${if (minsLeft != 1) "s" else ""} ${getLocalization("ui", "left")}")
             }
         }
         if (props.game.isPaused) {
-            alert("Game was paused")
+            alert(getLocalization("ui", "game was paused"))
         } else if (state.gameWasUnpaused) {
-            alert("Game was unpaused")
+            alert(getLocalization("ui", "game was unpaused"))
         }
 
         div(classes = "row") {
             attrs["aria-live"] = "polite"
             button(classes = "col s12 btn waves-effect waves-light") {
-                +if (props.game.isPaused) "Unpause" else "Pause"
+                +if (props.game.isPaused) getLocalization("ui", "unpause") else getLocalization("ui", "pause")
                 attrs {
                     onClickFunction = {
                         if (props.game.isPaused) {
@@ -166,7 +172,7 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
                 }
             }
             button(classes = "col s5 btn red waves-effect waves-light") {
-                +"Stop"
+                +getLocalization("ui", "stop game")
                 attrs {
                     onClickFunction = {
                         stopGame(props.info.gameCode)
@@ -174,7 +180,7 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
                 }
             }
             button(classes = "col s5 offset-s2 btn grey waves-effect waves-light") {
-                +"Leave"
+                +getLocalization("ui", "leave game")
                 attrs {
                     onClickFunction = {
                         leaveGame(props.info.gameCode)
@@ -220,10 +226,7 @@ fun stopGame(gameCode: String) {
 }
 
 fun leaveGame(gameCode: String) {
-    socketClient.run {
-        if (isConnected) {
-            sendMessage(LeaveGameRequest(appState.userInfo.userId, gameCode).serialize())
-        }
-    }
+    socketClient.sendMessage(LeaveGameRequest(appState.userInfo.userId, gameCode).serialize())
+    leftGameCode = gameCode
     toMainMenu()
 }

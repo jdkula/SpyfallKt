@@ -1,6 +1,7 @@
 package pw.jonak.spyfall.frontend.elements
 
 import kotlinx.html.SPAN
+import pw.jonak.spyfall.frontend.getLocalization
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -24,7 +25,7 @@ class IntroHeader(props: IntroProps) : RComponent<IntroProps, RState>(props) {
             span(classes = "accessibilityonly") { +" " }
             span(classes = "col s12 intro-header center-align") {
                 attrs["style"] = json("width" to "100%")
-                +"Welcome to Spyfall!"
+                +getLocalization("ui", "welcome to spyfall")
             }
             span(classes = "col s12 center-align") {
                 props.after(this)

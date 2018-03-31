@@ -1,0 +1,10 @@
+{
+  "location": "Hospital",
+  "nurse": "Nurse",
+  "doctor": "Doctor",
+  "anesthesiologist": "Anesthesiologist",
+  "intern": "Intern",
+  "therapist": "Therapist",
+  "surgeon": "Surgeon",
+  "patient": "Patient"
+}

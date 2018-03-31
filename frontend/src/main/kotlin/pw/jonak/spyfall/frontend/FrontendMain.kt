@@ -1,22 +1,39 @@
 package pw.jonak.spyfall.frontend
 
+import kotlinext.js.getOwnPropertyNames
 import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.url.URL
+import org.w3c.xhr.JSON
+import org.w3c.xhr.XMLHttpRequest
+import org.w3c.xhr.XMLHttpRequestResponseType
 import pw.jonak.spyfall.common.*
 import pw.jonak.spyfall.frontend.ApplicationState.*
 import pw.jonak.spyfall.frontend.elements.alert
+import pw.jonak.spyfall.frontend.elements.footer
 import pw.jonak.spyfall.frontend.elements.slider
 import pw.jonak.spyfall.frontend.state.*
 import react.dom.div
 import react.dom.render
 import react.dom.unmountComponentAtNode
 import kotlin.browser.document
+import kotlin.browser.window
+import kotlin.collections.set
 import kotlin.js.Date
+import kotlin.js.Json
 import kotlin.properties.Delegates
 
-const val host = "localhost:8080"
+var localizationName: String by Delegates.observable("en_US") { _, _, _ ->
+    localizations = HashMap()
+}
+var localizations: HashMap<String, Json> by Delegates.observable(HashMap()) { _, _, _ ->
+    updatePage()
+}
+var localizationOptions: Map<String, String> = mapOf()
+var host = window.location.host
 lateinit var socketClient: WebSocketClient
 lateinit var appDiv: HTMLDivElement
 lateinit var statusDiv: HTMLDivElement
+var leftGameCode: String? = null
 val dummyUser = UserRegistrationInformation(-1, "")
 var appState: GameState by Delegates.observable(GameState(dummyUser, LOGIN)) { _, oldValue, newValue ->
     println("Observed change! $oldValue ==> $newValue")
@@ -24,11 +41,24 @@ var appState: GameState by Delegates.observable(GameState(dummyUser, LOGIN)) { _
 }
 
 fun main(args: Array<String>) {
+    val windowUrl = window.location.href
+    val url = URL(windowUrl)
+    if (url.searchParams != undefined) { // for MS Edge...
+        val newHost = url.searchParams.get("host")
+        if (newHost != null) {
+            println("USING HOST $newHost!")
+            host = newHost
+        }
+    }
     document.addEventListener("DOMContentLoaded", {
         val barDiv = document.getElementById("connectionstatus")
         render(barDiv) { slider() }
         statusDiv = document.getElementById("statusbar") as HTMLDivElement
         appDiv = document.getElementById("app") as HTMLDivElement
+
+        getLocalizationList()
+        getLocalization("ui", "")
+        getLocalization("locations", "")
 
         socketClient = WebSocketClient("ws://$host/ws") {
             println("First connect!")
@@ -36,10 +66,10 @@ fun main(args: Array<String>) {
 
         socketClient.onOpen {
             println("Reconnected!")
-            if("userInfo" in CookieManager) {
+            if ("userInfo" in CookieManager) {
                 println(CookieManager["userInfo"])
                 val userInfo = CookieManager["userInfo"]?.deserialize()
-                if(userInfo is UserRegistrationInformation) {
+                if (userInfo is UserRegistrationInformation) {
                     socketClient.sendMessage(EnsureUserRegistration(userInfo.userId, userInfo.userName).serialize())
                 }
             }
@@ -59,35 +89,36 @@ fun main(args: Array<String>) {
             counter += 1
             println("RECEIVING $counter: ${it.data?.toString()}")
             val msg = it.data?.toString()?.deserialize()
-            if(msg is UserRegistrationInformation) {
+            if (msg is UserRegistrationInformation) {
                 appState = appState.changeUserInfo(msg)
                 println("Found user ID ${appState.userInfo.userId}")
-                if(appState.state == LOGIN) {
+                if (appState.state == LOGIN) {
                     // We've now logged in!
                     println("Logged In!")
                     appState = appState.changeState(MAINMENU)
                     val now = Date()
                     val expiry = Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, now.getHours(), now.getMinutes(), now.getSeconds())
                     CookieManager.add("userInfo" to appState.userInfo.serialize(), expiry)
-                    if("currentLobby" in CookieManager) {
+                    if ("currentLobby" in CookieManager) {
                         println(CookieManager["currentLobby"])
                         val lobbyInfo = CookieManager["currentLobby"]?.deserialize()
-                        if(lobbyInfo is LobbyInformation && appState.userInfo != dummyUser) {
-                            socketClient.sendMessage(JoinGameRequest(appState.userInfo.userId, appState.userInfo.userName, lobbyInfo.gameCode).serialize())
+                        if (lobbyInfo is LobbyInformation && appState.userInfo != dummyUser) {
+                            joinGame(lobbyInfo.gameCode)
                         }
                     }
                 }
             }
-            if(msg is LobbyInformation) {
-                if(appState.state != LOBBY && appState.state != GAME) {
+            if (msg is LobbyInformation && msg.gameCode != leftGameCode && msg.packetId > (appState.currentLobby?.packetId
+                            ?: -1)) {
+                if (appState.state != LOBBY && appState.state != GAME) {
                     socketClient.sendMessage(LocationListRequest().serialize())
                 }
                 val now = Date()
                 val expiry = Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, now.getHours(), now.getMinutes(), now.getSeconds())
                 CookieManager.add("currentLobby" to msg.serialize(), expiry)
                 appState = appState.changeLobby(msg)
-                appState = if(msg.gameHasStarted) {
-                    if(appState.state != GAME) {
+                appState = if (msg.gameHasStarted) {
+                    if (appState.state != GAME) {
                         socketClient.sendMessage(LocationListRequest().serialize())
                     }
                     appState.changeState(GAME)
@@ -95,7 +126,7 @@ fun main(args: Array<String>) {
                     appState.changeState(LOBBY)
                 }
             }
-            if(msg is LocationListAnswer) {
+            if (msg is LocationListAnswer) {
                 appState = appState.changeLocations(msg.locationList)
             }
             println("FINISHED WITH M#$counter")
@@ -105,56 +136,53 @@ fun main(args: Array<String>) {
 }
 
 fun updatePage() {
-    when (appState.state) {
-        LOGIN -> {
-            render(appDiv) {
+    render(appDiv) {
+        when (appState.state) {
+            LOGIN -> {
                 div {
                     login(if (appState.userInfo != dummyUser) appState.userInfo.userName else null)
                 }
+
             }
-        }
-        MAINMENU -> {
-            println("Rendering Main Menu...")
-            render(appDiv) {
+            MAINMENU -> {
+                println("Rendering Main Menu...")
                 div {
                     mainMenu(appState.userInfo.userName)
                 }
+
             }
-        }
-        JOIN -> {
-            render(appDiv) {
+            JOIN -> {
                 div {
                     join()
                 }
             }
-        }
-        LOBBY -> render(appDiv) {
-            div {
-                appState.currentLobby?.let { lobby(it) }
+            LOBBY -> {
+                div {
+                    appState.currentLobby?.let { lobby(it) }
+                }
             }
-        }
-        GAME -> render(appDiv) {
-            div {
-                appState.currentLobby?.let { lobby ->
-                    lobby.gameInformation?.let { game ->
-                        appState.locationList?.let { locations ->
-                            game(lobby, game, locations)
+            GAME -> {
+                div {
+                    appState.currentLobby?.let { lobby ->
+                        lobby.gameInformation?.let { game ->
+                            appState.locationList?.let { locations ->
+                                game(lobby, game, locations)
+                            }
                         }
                     }
                 }
             }
-        }
-        ADMINMENU -> render(appDiv) {
-            div {
-                adminMenu()
+            ADMINMENU -> {
+                div {
+                    adminMenu()
+                }
             }
         }
-    }
 
-    if(appDiv.childNodes.length == 0) {
-        render(statusDiv) {
+        if (appDiv.childNodes.length == 0) {
             slider()
         }
+        footer()
     }
 }
 
@@ -179,4 +207,54 @@ data class GameState(
     fun changeLocations(newLocations: List<String>?): GameState {
         return GameState(userInfo, state, currentLobby, newLocations)
     }
+}
+
+
+fun getLocalizationList() {
+    val xhr = XMLHttpRequest()
+    xhr.onload = {
+        val status = xhr.status
+        if (status == 200.toShort()) {
+            println("Got localization list!")
+            val mapJson = xhr.response.unsafeCast<Json>()
+            val props = mapJson.getOwnPropertyNames()
+            println("PROPS = $props")
+            localizationOptions = props.map { it to mapJson[it].unsafeCast<String>() }.toMap()
+            updatePage()
+        } else {
+            println("ERROR!! Got status ${xhr.status}")
+        }
+    }
+    xhr.open("GET", "${window.location.protocol}//${window.location.host}${window.location.pathname}/localization/localizations.json")
+    xhr.responseType = XMLHttpRequestResponseType.JSON
+    println("Sending request!")
+    xhr.send()
+}
+
+val xhrsOut = HashSet<String>()
+
+fun getLocalization(localizationGroup: String, localizationElement: String): String {
+    if (localizationGroup !in localizations && localizationGroup !in xhrsOut) {
+        xhrsOut += localizationGroup
+        val xhr = XMLHttpRequest()
+        xhr.onload = {
+            val status = xhr.status
+            xhrsOut -= localizationGroup
+            if (status == 200.toShort() && localizationGroup !in localizations) {
+                println("Got localization!")
+                localizations[localizationGroup] = xhr.response.unsafeCast<Json>()
+                updatePage()
+            } else {
+                println("ERROR!! Got status ${xhr.status}")
+            }
+        }
+        xhr.open("GET", "${window.location.protocol}//${window.location.host}${window.location.pathname}/localization/$localizationName/$localizationGroup.json")
+        xhr.responseType = XMLHttpRequestResponseType.JSON
+        println("Sending request!")
+        xhr.send()
+    }
+    val x = localizations[localizationGroup]
+    val y = x?.get(localizationElement)
+    val z = y as? String
+    return z ?: localizationElement
 }

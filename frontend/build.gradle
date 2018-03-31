@@ -1,7 +1,7 @@
 apply plugin: 'kotlin2js'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'kotlin-platform-js'
-//apply plugin: 'kotlin-dce-js'
+apply plugin: 'kotlin-dce-js'
 apply plugin: 'org.jetbrains.kotlin.frontend'
 apply plugin: 'com.moowork.node'
 //apply plugin: "org.kravemir.gradle.sass"
@@ -41,19 +41,16 @@ compileKotlin2Js {
     }
 }
 
+boolean isProduction = true
 
-
-boolean isProduction = false
-
-//runDceKotlinJs {
-//    dceOptions {
-//        if(!isProduction) {
-//            devMode = true
-//        }
-//    }
-//    keep "kotlin.math"
-//    keep "kotlin"
-//}
+runDceKotlinJs {
+    dceOptions {
+        if(!isProduction) {
+            devMode = true
+        }
+    }
+    keep "kotlin.math"
+}
 
 kotlinFrontend {
     downloadNodeJsVersion = 'latest'
@@ -88,14 +85,16 @@ kotlin {
 }
 
 task bundleAll(dependsOn: assemble) {
-    delete "$buildDir/WEB"
-    copy {
-        from "$buildDir/bundle"
-        into "$buildDir/WEB"
-    }
-    copy {
-        from "$projectDir/src/main/resources"
-        into "$buildDir/WEB"
+    doLast {
+        delete "$buildDir/WEB"
+        copy {
+            from "$buildDir/bundle"
+            into "$buildDir/WEB"
+        }
+        copy {
+            from "$projectDir/src/main/resources"
+            into "$buildDir/WEB"
+        }
     }
 }
 

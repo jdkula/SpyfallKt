@@ -1,18 +1,28 @@
 package pw.jonak.spyfall.backend.gameElements
 
+import io.netty.util.internal.ConcurrentSet
 import pw.jonak.spyfall.common.GameInformation
 import pw.jonak.spyfall.common.LobbyInformation
 import java.time.Duration
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 const val spyRoleId = "spy"
 
-class Game(val code: String, val gameLength: Duration = Duration.ofMinutes(7)) {
-    private val _users = HashSet<User>()
+class Game(val code: String, val gameLength: Duration = Duration.ofMinutes(8)) {
+    private val _users = ConcurrentSet<User>()
     val users: Set<User> get() = _users
 
-    private val _userRoleMap = HashMap<User, String>()
+    private val _userRoleMap = ConcurrentHashMap<User, String>()
     val userRoleMap: Map<User, String> get() = _userRoleMap
+
+    var latestLobbyInformationPacketId: Int = 0
+        get() {
+            synchronized(field) {
+                field += 1
+            }
+            return field - 1
+        }
 
     var location: Location? = null
 
@@ -46,10 +56,10 @@ class Game(val code: String, val gameLength: Duration = Duration.ofMinutes(7)) {
         val roles = location!!.roles.toMutableList()
         firstPlayer = _users.randomValue()
         _users.forEach {
-            if(it != spyPlayer) {
+            if (it != spyPlayer) {
                 _userRoleMap += it to roles.removeAt(Random().nextInt(roles.size))
             }
-            if(roles.isEmpty()) {
+            if (roles.isEmpty()) {
                 roles.addAll(location!!.roles)
             }
         }
@@ -57,11 +67,11 @@ class Game(val code: String, val gameLength: Duration = Duration.ofMinutes(7)) {
 
     fun getLobbyInfo(user: User?): LobbyInformation {
         val usersList = users.map { it.userName }.toList()
-        return LobbyInformation(code, usersList, getGameInfo(user, usersList))
+        return LobbyInformation(code, usersList, latestLobbyInformationPacketId, getGameInfo(user, usersList))
     }
 
     fun getGameInfo(user: User? = null, usersList: List<String>): GameInformation? {
-        return if(gameHasStarted) {
+        return if (gameHasStarted) {
             val firstPlayerId = usersList.indexOf(firstPlayer?.userName)
             val isSpy = spyPlayer == user && user != null
             GameInformation(
@@ -78,7 +88,7 @@ class Game(val code: String, val gameLength: Duration = Duration.ofMinutes(7)) {
 
     fun addUser(user: User) {
         _users += user
-        if(gameHasStarted && user !in _userRoleMap.keys) {
+        if (gameHasStarted && user !in _userRoleMap.keys) {
             _userRoleMap += user to location!!.roles.randomValue()
         }
     }

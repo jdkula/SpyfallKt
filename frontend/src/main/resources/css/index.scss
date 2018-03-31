@@ -46,3 +46,24 @@
   text-decoration-line: line-through;
   color: gray;
 }
+
+.alllower {
+  text-transform: lowercase;
+}
+
+div.footer {
+  width: 100%;
+}
+
+.attribution {
+  color: dimgrey;
+  font-size: smaller;
+}
+
+.listentry {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+}

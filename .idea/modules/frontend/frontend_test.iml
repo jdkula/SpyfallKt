@@ -39,9 +39,9 @@
     </content>
     <orderEntry type="jdk" jdkName="Kotlin SDK" jdkType="KotlinSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="frontend_main" />
     <orderEntry type="module" module-name="common_test" />
     <orderEntry type="module" module-name="common_main" />
-    <orderEntry type="module" module-name="frontend_main" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.4.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:kotlin-react-dom:16.2.1-pre.15-kotlin-1.2.30" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:kotlin-react:16.2.1-pre.15-kotlin-1.2.30" level="project" />

@@ -2,9 +2,10 @@ package pw.jonak.spyfall.backend.storage
 
 import pw.jonak.spyfall.backend.gameElements.User
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 class UserStore {
-    private val _users = HashMap<Int, User>()
+    private val _users = ConcurrentHashMap<Int, User>()
     val users: Map<Int, User> get() = _users
 
     fun createUser(userName: String): User {
@@ -16,7 +17,7 @@ class UserStore {
     fun getExistingUser(userId: Int): User? = _users[userId]
 
     fun ensureRegistered(userId: Int, userName: String): User =
-            if (userId !in _users) {
+            if (!_users.containsKey(userId)) {
                 val newUser = createUser(userName)
                 newUser
             } else {
