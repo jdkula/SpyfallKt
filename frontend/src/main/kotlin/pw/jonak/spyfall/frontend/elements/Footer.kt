@@ -20,7 +20,17 @@ class Footer : RComponent<RProps, RState>() {
                 attrs["dangerouslySetInnerHTML"] = json("__html" to getLocalization("ui", "footer"))
             }
             div {
-                button(classes = "dropdown-trigger btn-small grey darken-3") {
+                attrs["style"] = json("margin" to "5px")
+                a(classes = "btn-small waves-effect waves-light grey darken-2") {
+                    attrs {
+                        href = getLocalization("ui", "rules url")
+                    }
+                    i(classes = "material-icons left") { +"help_outline" }
+                    +" ${getLocalization("ui", "rules")}"
+                }
+            }
+            div {
+                button(classes = "dropdown-trigger btn-small waves-effect waves-light grey darken-3") {
                     +getLocalization("ui", "choose language")
                     attrs["data-target"] = "language-dropdown"
                 }

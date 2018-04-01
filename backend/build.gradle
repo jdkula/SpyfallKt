@@ -56,5 +56,5 @@ junitPlatform {
 }
 
 
-
-mainClassName = "pw.jonak.spyfall.backend.MainKt"
+applicationDefaultJvmArgs = ["-server", "-XX:+TieredCompilation"]
+mainClassName = "io.ktor.server.netty.DevelopmentEngine"

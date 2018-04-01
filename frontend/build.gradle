@@ -58,8 +58,10 @@ kotlinFrontend {
     npm {
         dependency("react", "16.2.0")
         dependency("react-dom", "16.2.0")
-        dependency "uglifyjs-webpack-plugin"
-        devDependency "style-loader"
+        dependency("popper.js")
+        dependency("tooltip.js")
+        dependency("uglifyjs-webpack-plugin")
+        devDependency("style-loader")
     }
 
 

@@ -8,6 +8,7 @@ import pw.jonak.spyfall.common.serialize
 import pw.jonak.spyfall.frontend.MessageHandler
 import pw.jonak.spyfall.frontend.appState
 import pw.jonak.spyfall.frontend.elements.accessibleBullet
+import pw.jonak.spyfall.frontend.elements.gameCode
 import pw.jonak.spyfall.frontend.getLocalization
 import pw.jonak.spyfall.frontend.socketClient
 import react.RBuilder
@@ -27,11 +28,7 @@ class Lobby(props: LobbyProps) : RComponent<LobbyProps, RState>(props) {
             +getLocalization("ui", "page lobby")
         }
         div(classes = "row") {
-            span(classes = "col s12 center-align") {
-                attrs["style"] = json("width" to "100%")
-                +"${getLocalization("ui", "code")}: "
-                span(classes = "teletype") { +props.lobbyInfo.gameCode }
-            }
+            gameCode(props.lobbyInfo.gameCode)
             h4(classes = "col s12 center-align") {
                 attrs["style"] = json("width" to "100%")
                 +getLocalization("ui", "awaiting")

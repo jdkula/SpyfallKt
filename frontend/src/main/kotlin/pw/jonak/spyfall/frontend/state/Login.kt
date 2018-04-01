@@ -95,7 +95,7 @@ fun RBuilder.login(placeholderName: String? = null) = child(Login::class) {
 fun register(name: String) {
     socketClient.run {
         val message = if (appState.userInfo != dummyUser) {
-            EnsureUserRegistration(appState.userInfo.userId, name)
+            EnsureUserRegistration(appState.userInfo.userId, name, appState.userInfo.sessionId)
         } else {
             UserRegistrationRequest(name)
         }

@@ -31,7 +31,7 @@ class Join : RComponent<RProps, RState>() {
                         id = "gamecodelabel"
                     }
                 }
-                input(type = InputType.text, classes = "teletype alllower") {
+                input(type = InputType.text, classes = "teletype alllower ${if(lastGameCodeWasWrong) "invalid" else ""}") {
                     attrs["autocapitalize"] = "none"
                     attrs["autocorrect"] = "off"
                     attrs["autocomplete"] = "nope"
@@ -49,6 +49,10 @@ class Join : RComponent<RProps, RState>() {
                     }
                     attrs["aria-labelledby"] = "gamecodelabel"
                 }
+                span(classes = "helper-text") {
+                    attrs["data-error"] = getLocalization("ui", "game code not found")
+                    attrs["data-success"] = ""
+                }
             }
 
             button(classes = "waves-effect waves-light btn col s12 m8 l10") {
@@ -56,6 +60,7 @@ class Join : RComponent<RProps, RState>() {
                 attrs {
                     id = "joinButton"
                     onClickFunction = {
+                        lastGameCodeWasWrong = false
                         joinEvent()
                     }
                 }
@@ -64,6 +69,7 @@ class Join : RComponent<RProps, RState>() {
                 +getLocalization("ui", "back")
                 attrs {
                     onClickFunction = {
+                        lastGameCodeWasWrong = false
                         toMainMenu()
                     }
                 }
@@ -74,6 +80,7 @@ class Join : RComponent<RProps, RState>() {
 
 fun RBuilder.join() = child(Join::class) {}
 fun toJoinState() {
+    lastGameCodeWasWrong = false
     appState = appState.changeState(ApplicationState.JOIN)
 }
 

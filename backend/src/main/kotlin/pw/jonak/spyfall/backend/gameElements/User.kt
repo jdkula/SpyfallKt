@@ -2,6 +2,7 @@ package pw.jonak.spyfall.backend.gameElements
 
 import com.kizitonwose.time.days
 import com.kizitonwose.time.plus
+import pw.jonak.spyfall.backend.thisSession
 import pw.jonak.spyfall.common.UserRegistrationInformation
 import java.util.*
 
@@ -20,7 +21,7 @@ class User(val id: Int, var userName: String) {
     override fun hashCode(): Int = id
 
     fun toMessage(): UserRegistrationInformation {
-        return UserRegistrationInformation(id, userName)
+        return UserRegistrationInformation(id, userName, thisSession)
     }
 
     override fun toString(): String {
@@ -30,7 +31,9 @@ class User(val id: Int, var userName: String) {
     companion object {
         var totalUsersRegistered: Int = 0
             get() {
-                field += 1
+                synchronized(field) {
+                    field += 1
+                }
                 return field
             }
             private set

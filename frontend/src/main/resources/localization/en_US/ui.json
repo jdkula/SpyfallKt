@@ -3,6 +3,7 @@
   "create game": "Create a Game",
   "join game": "Join a Game",
   "code": "Game Code",
+  "game code not found": "Game Code Not Found",
   "start game": "Start Game",
   "leave game": "Leave",
   "back": "Back",
@@ -14,7 +15,7 @@
   "location list": "List of Locations:",
   "stop game": "Stop Game",
   "name": "Name",
-  "footer": "<a href=\"http://international.hobbyworld.ru/catalog/25-spyfall/\" target=\"_blank\">Spyfall</a>, designed by Alexandr Ushan, published by <a href=\"http://international.hobbyworld.ru/\" target=\"_blank\">Hobby World</a><br>Favicon by <a href=\"http://www.iconarchive.com/show/malware-icons-by-hopstarter/Spy-icon.html\" target=\"_blank\">Hopstar</a>",
+  "footer": "<a href=\"http://international.hobbyworld.ru/catalog/25-spyfall/\" target=\"_blank\">Spyfall</a>, designed by Alexandr Ushan, published by <a href=\"http://international.hobbyworld.ru/\" target=\"_blank\">Hobby World</a>",
   "page login screen": "Page Login Screen",
   "page main screen": "Page Main Screen",
   "page join screen": "Page Join Screen",
@@ -35,5 +36,8 @@
   "game was unpaused": "Game was unpaused",
   "pause": "Pause",
   "unpause": "Unpause",
-  "choose language": "Choose Language"
+  "choose language": "Choose Language",
+  "rules": "Rules",
+  "copied": "Copied!",
+  "rules url": "https://www.cryptozoic.com/sites/default/files/icme/u30695/spy_rules_eng_0.pdf"
 }

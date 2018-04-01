@@ -29,7 +29,7 @@ class SpyfallGameServer {
 
     /** Allows a user to join a game, adding them to the list of connected users that are notified of state changes. */
     suspend fun joinGame(request: JoinGameRequest, session: WebSocketSession): SpyfallMessage? {
-        val userInfo = userStore.ensureRegistered(request.userId, request.userName)
+        val userInfo = userStore.ensureRegistered(request.userId, request.userName, thisSession)
 
         connectedUsers.getOrPut(userInfo) { ConcurrentSet() }.add(session)
         println("${userInfo.userName}/${userInfo.id} connected: ${connectedUsers[userInfo]?.size} sessions.")
@@ -150,7 +150,7 @@ class SpyfallGameServer {
                 AdminActionType.PRUNE_USERS -> userStore.pruneUsers()
             }
             is UserRegistrationRequest -> userStore.createUser(message.userName).toMessage()
-            is EnsureUserRegistration -> userStore.ensureRegistered(message.userId, message.userName).toMessage()
+            is EnsureUserRegistration -> userStore.ensureRegistered(message.userId, message.userName, message.sessionId).toMessage()
             is LobbyInformationRequest -> gameStore.getLobbyInfo(message.gameCode, message.userId)
             is JoinGameRequest -> joinGame(message, session)
             is LeaveGameRequest -> leaveGame(message)

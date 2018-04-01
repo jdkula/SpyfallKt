@@ -34,10 +34,15 @@ lateinit var socketClient: WebSocketClient
 lateinit var appDiv: HTMLDivElement
 lateinit var statusDiv: HTMLDivElement
 var leftGameCode: String? = null
-val dummyUser = UserRegistrationInformation(-1, "")
+val dummyUser = UserRegistrationInformation(-1, "", -1)
 var appState: GameState by Delegates.observable(GameState(dummyUser, LOGIN)) { _, oldValue, newValue ->
     println("Observed change! $oldValue ==> $newValue")
     updatePage()
+}
+var lastGameCodeWasWrong: Boolean by Delegates.observable(false) { _, _, isWrong ->
+    if(isWrong) {
+        updatePage()
+    }
 }
 
 fun main(args: Array<String>) {
@@ -70,7 +75,7 @@ fun main(args: Array<String>) {
                 println(CookieManager["userInfo"])
                 val userInfo = CookieManager["userInfo"]?.deserialize()
                 if (userInfo is UserRegistrationInformation) {
-                    socketClient.sendMessage(EnsureUserRegistration(userInfo.userId, userInfo.userName).serialize())
+                    socketClient.sendMessage(EnsureUserRegistration(userInfo.userId, userInfo.userName, userInfo.sessionId).serialize())
                 }
             }
             unmountComponentAtNode(barDiv)
@@ -96,26 +101,25 @@ fun main(args: Array<String>) {
                     // We've now logged in!
                     println("Logged In!")
                     appState = appState.changeState(MAINMENU)
-                    val now = Date()
-                    val expiry = Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, now.getHours(), now.getMinutes(), now.getSeconds())
-                    CookieManager.add("userInfo" to appState.userInfo.serialize(), expiry)
-                    if ("currentLobby" in CookieManager) {
-                        println(CookieManager["currentLobby"])
-                        val lobbyInfo = CookieManager["currentLobby"]?.deserialize()
-                        if (lobbyInfo is LobbyInformation && appState.userInfo != dummyUser) {
-                            joinGame(lobbyInfo.gameCode)
-                        }
+                    CookieManager.add("userInfo" to appState.userInfo.serialize(), getDateXFromNow(days = 1))
+                }
+                if (appState.userInfo != dummyUser && ("currentLobby" in CookieManager || (url.searchParams != undefined && url.searchParams.get("gamecode") != null) || appState.currentLobby?.gameHasStarted == true)) {
+                    println(CookieManager["currentLobby"])
+                    val gameCode = appState.currentLobby?.gameCode ?: url.searchParams.get("gamecode") ?: CookieManager["currentLobby"]
+                    if (gameCode != null && appState.userInfo != dummyUser) {
+                        joinGame(gameCode)
                     }
                 }
+            }
+            if(msg is GameNotFound) {
+                lastGameCodeWasWrong = true
             }
             if (msg is LobbyInformation && msg.gameCode != leftGameCode && msg.packetId > (appState.currentLobby?.packetId
                             ?: -1)) {
                 if (appState.state != LOBBY && appState.state != GAME) {
                     socketClient.sendMessage(LocationListRequest().serialize())
                 }
-                val now = Date()
-                val expiry = Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, now.getHours(), now.getMinutes(), now.getSeconds())
-                CookieManager.add("currentLobby" to msg.serialize(), expiry)
+                CookieManager.add("currentLobby" to msg.gameCode, getDateXFromNow(days = 1))
                 appState = appState.changeLobby(msg)
                 appState = if (msg.gameHasStarted) {
                     if (appState.state != GAME) {
@@ -257,4 +261,17 @@ fun getLocalization(localizationGroup: String, localizationElement: String): Str
     val y = x?.get(localizationElement)
     val z = y as? String
     return z ?: localizationElement
+}
+
+fun getDateXFromNow(years: Int = 0, months: Int = 0, days: Int = 0, hours: Int = 0, minutes: Int = 0, seconds: Int = 0): Date {
+    val now = Date()
+    val new = Date(
+            now.getFullYear() + years,
+            now.getMonth() + months,
+            now.getDate() + days,
+            now.getHours() + hours,
+            now.getMinutes() + minutes,
+            now.getSeconds() + seconds
+    )
+    return new
 }

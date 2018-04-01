@@ -16,7 +16,11 @@ class UserRegistrationRequest(@SerialName("user_name") val userName: String) : S
 }
 
 @Serializable
-class EnsureUserRegistration(@SerialName("user_id") val userId: Int, @SerialName("user_name") val userName: String) : SpyfallMessage {
+class EnsureUserRegistration(
+        @SerialName("user_id") val userId: Int,
+        @SerialName("user_name") val userName: String,
+        @SerialName("session_id") val sessionId: Int
+) : SpyfallMessage {
     @SerialName("message_type")
     override val messageType = Companion.messageTypeName
     @SerialName("sender_side")
@@ -30,7 +34,8 @@ class EnsureUserRegistration(@SerialName("user_id") val userId: Int, @SerialName
 @Serializable
 class UserRegistrationInformation(
         @SerialName("user_id") val userId: Int,
-        @SerialName("user_name") val userName: String
+        @SerialName("user_name") val userName: String,
+        @SerialName("session_id") val sessionId: Int
 ) : SpyfallMessage {
     @SerialName("message_type")
     override val messageType = Companion.messageTypeName

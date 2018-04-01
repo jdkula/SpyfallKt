@@ -28,6 +28,12 @@ object CookieManager {
         return toCookie() + "; " + other.toCookie()
     }
 
+    fun deleteAll() {
+        getCookies().forEach { (key, _) ->
+            delete(key)
+        }
+    }
+
     fun getCookies(): Map<String, String> {
         return document
                 .cookie

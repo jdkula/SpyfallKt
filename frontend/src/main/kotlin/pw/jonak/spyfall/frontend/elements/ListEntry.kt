@@ -24,25 +24,16 @@ class ListEntry(props: ListEntryProps) : RComponent<ListEntryProps, ListEntrySta
     }
 
     override fun RBuilder.render() {
-        if(state.checked) {
-            li(classes = "crossedoff listentry ${props.extraClasses}") {
+            li(classes = "${if (state.checked) "crossedoff" else ""} listentry ${props.extraClasses}") {
                 props.inner(this)
                 attrs {
                     onClickFunction = {
+                        it.preventDefault()
+                        it.stopPropagation()
                         state.checked = !state.checked
                     }
                 }
             }
-        } else {
-            li(classes = "listentry ${props.extraClasses}") {
-                props.inner(this)
-                attrs {
-                    onClickFunction = {
-                        state.checked = !state.checked
-                    }
-                }
-            }
-        }
     }
 }
 
