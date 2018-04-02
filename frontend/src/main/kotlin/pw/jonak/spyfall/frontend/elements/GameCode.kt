@@ -10,7 +10,6 @@ import react.dom.input
 import react.dom.span
 import kotlin.browser.document
 import kotlin.browser.window
-import kotlin.js.json
 
 interface GameCodeState : RState {
     var isField: Boolean
@@ -30,10 +29,8 @@ class GameCode(props: GameCodeProps) : RComponent<GameCodeProps, GameCodeState>(
         span(classes = "col s12 center-align") {
             +"${getLocalization("ui", "code")}: "
             if(state.isField) {
-                span(classes = "teletype") {
-                    attrs["style"] = json("width" to "7ex", "max-width" to "7ex")
-                    input(type = InputType.text) {
-                        attrs["style"] = json("width" to "7ex", "max-width" to "7ex")
+                span(classes = "teletype copybox") {
+                    input(classes = "copybox", type = InputType.text) {
                         attrs {
                             value = "${window.location.protocol}//${window.location.host}${window.location.pathname}/g/${props.gameCode}"
                             id = "gamecodeentry"

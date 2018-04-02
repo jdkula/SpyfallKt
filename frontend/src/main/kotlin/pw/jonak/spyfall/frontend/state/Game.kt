@@ -13,7 +13,6 @@ import react.*
 import react.dom.*
 import kotlin.browser.window
 import kotlin.js.Date
-import kotlin.js.json
 import kotlin.math.max
 import kotlin.math.round
 
@@ -79,29 +78,24 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
             +getLocalization("ui", "page game")
         }
         div(classes = "row") {
-            span(classes = "col s12 center-align") {
-                attrs["style"] = json("width" to "100%")
+            span(classes = "col s12 maxwidth center-align") {
                 +"${getLocalization("ui", "code")}: "
                 span(classes = "teletype") { +props.info.gameCode }
             }
             if (props.game.isSpy) {
-                h1(classes = "col s12 center-align") {
-                    attrs["style"] = json("width" to "100%")
+                h1(classes = "col s12 maxwidth center-align") {
                     +getLocalization("ui", "you are the spy")
                 }
             } else {
-                h1(classes = "col s12 center-align") {
-                    attrs["style"] = json("width" to "100%")
+                h1(classes = "col s12 maxwidth center-align") {
                     +"${getLocalization("ui", "location")} "
                     b { +getLocalization("locations", props.game.location) }
                 }
-                h2(classes = "col s12 center-align") {
-                    attrs["style"] = json("width" to "100%")
+                h2(classes = "col s12 maxwidth center-align") {
                     +"${getLocalization("ui", "role")} "
                     b { +getLocalization(props.game.location, props.game.role) }
                 }
-                p(classes = "col s12 center-align") {
-                    attrs["style"] = json("width" to "100%")
+                p(classes = "col s12 maxwidth center-align") {
                     +getLocalization("ui", "you are not the spy")
                 }
             }

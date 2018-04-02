@@ -19,8 +19,7 @@ class Footer : RComponent<RProps, RState>() {
             p(classes = "attribution") {
                 attrs["dangerouslySetInnerHTML"] = json("__html" to getLocalization("ui", "footer"))
             }
-            div {
-                attrs["style"] = json("margin" to "5px")
+            div(classes = "stacked") {
                 a(classes = "btn-small waves-effect waves-light grey darken-2") {
                     attrs {
                         href = getLocalization("ui", "rules url")
@@ -57,6 +56,7 @@ class Footer : RComponent<RProps, RState>() {
                 }
             }
         }
+        @Suppress("UNUSED_VARIABLE")
         val elem = document.querySelector(".dropdown-trigger")
         js("M.Dropdown.init(elem, {});")
     }

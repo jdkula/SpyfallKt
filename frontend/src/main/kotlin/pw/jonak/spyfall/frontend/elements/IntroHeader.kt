@@ -9,7 +9,6 @@ import react.RState
 import react.dom.RDOMBuilder
 import react.dom.div
 import react.dom.span
-import kotlin.js.json
 
 interface IntroProps : RProps {
     var before: RDOMBuilder<SPAN>.() -> Unit
@@ -23,8 +22,7 @@ class IntroHeader(props: IntroProps) : RComponent<IntroProps, RState>(props) {
                 props.before(this)
             }
             span(classes = "accessibilityonly") { +" " }
-            span(classes = "col s12 intro-header center-align") {
-                attrs["style"] = json("width" to "100%")
+            span(classes = "col maxwidth s12 intro-header center-align") {
                 +getLocalization("ui", "welcome to spyfall")
             }
             span(classes = "col s12 center-align") {

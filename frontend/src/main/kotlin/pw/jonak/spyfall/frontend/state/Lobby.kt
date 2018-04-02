@@ -5,7 +5,6 @@ import pw.jonak.spyfall.common.LobbyInformation
 import pw.jonak.spyfall.common.LobbyInformationRequest
 import pw.jonak.spyfall.common.StartGameRequest
 import pw.jonak.spyfall.common.serialize
-import pw.jonak.spyfall.frontend.MessageHandler
 import pw.jonak.spyfall.frontend.appState
 import pw.jonak.spyfall.frontend.elements.accessibleBullet
 import pw.jonak.spyfall.frontend.elements.gameCode
@@ -16,7 +15,6 @@ import react.RComponent
 import react.RProps
 import react.RState
 import react.dom.*
-import kotlin.js.json
 
 interface LobbyProps : RProps {
     var lobbyInfo: LobbyInformation
@@ -29,8 +27,7 @@ class Lobby(props: LobbyProps) : RComponent<LobbyProps, RState>(props) {
         }
         div(classes = "row") {
             gameCode(props.lobbyInfo.gameCode)
-            h4(classes = "col s12 center-align") {
-                attrs["style"] = json("width" to "100%")
+            h4(classes = "col s12 maxwidth center-align") {
                 +getLocalization("ui", "awaiting")
             }
         }
@@ -74,7 +71,7 @@ fun RBuilder.lobby(lobbyInfo: LobbyInformation) = child(Lobby::class) {
     attrs.lobbyInfo = lobbyInfo
 }
 
-fun toLobbyState(gameCode: String, then: MessageHandler? = null) {
+fun toLobbyState(gameCode: String) {
     socketClient.run {
         if (isConnected) {
             sendMessage(LobbyInformationRequest(appState.userInfo.userId, gameCode).serialize())
