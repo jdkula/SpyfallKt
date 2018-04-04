@@ -16,7 +16,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.response.respondRedirect
 import io.ktor.response.respondText
 import io.ktor.routing.get
-import io.ktor.routing.post
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.websocket.Frame
@@ -106,10 +105,10 @@ fun Application.main() {
          */
         route("/execute") {
             /**
-             * POST /execute/shutdown
+             * GET /execute/shutdown
              * Shuts down the server.
              */
-            post("shutdown") {
+            get("shutdown") {
                 call.respondText(JSON.stringify(ServerShutdownOK()), ContentType.Application.Json)
                 System.exit(0)
             }

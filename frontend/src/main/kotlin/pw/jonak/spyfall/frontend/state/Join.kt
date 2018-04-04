@@ -9,6 +9,7 @@ import pw.jonak.spyfall.common.JoinGameRequest
 import pw.jonak.spyfall.common.LocationListRequest
 import pw.jonak.spyfall.common.serialize
 import pw.jonak.spyfall.frontend.*
+import pw.jonak.spyfall.frontend.LocalizationInformation.getLocalization
 import react.RBuilder
 import react.RComponent
 import react.RProps

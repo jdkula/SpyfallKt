@@ -8,6 +8,7 @@ import pw.jonak.spyfall.common.EnsureUserRegistration
 import pw.jonak.spyfall.common.UserRegistrationRequest
 import pw.jonak.spyfall.common.serialize
 import pw.jonak.spyfall.frontend.*
+import pw.jonak.spyfall.frontend.LocalizationInformation.getLocalization
 import pw.jonak.spyfall.frontend.elements.introHeader
 import react.RBuilder
 import react.RComponent

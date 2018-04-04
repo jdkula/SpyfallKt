@@ -4,7 +4,7 @@ import kotlinx.html.InputType
 import kotlinx.html.id
 import kotlinx.html.js.*
 import org.w3c.dom.HTMLInputElement
-import pw.jonak.spyfall.frontend.getLocalization
+import pw.jonak.spyfall.frontend.LocalizationInformation.getLocalization
 import react.*
 import react.dom.input
 import react.dom.span

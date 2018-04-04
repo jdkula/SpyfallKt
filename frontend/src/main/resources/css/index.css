@@ -49,4 +49,21 @@ div.footer {
   color: dimgrey;
   font-size: smaller; }
 
+.listentry {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer; }
+
+.stacked {
+  margin: 5px; }
+
+.copybox {
+  width: 7ex;
+  min-width: 7ex; }
+
+.maxwidth {
+  width: 100%; }
+
 /*# sourceMappingURL=index.css.map */

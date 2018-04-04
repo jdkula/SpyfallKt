@@ -2,11 +2,11 @@ package pw.jonak.spyfall.frontend.state
 
 import kotlinx.html.js.onClickFunction
 import pw.jonak.spyfall.common.*
+import pw.jonak.spyfall.frontend.LocalizationInformation.getLocalization
 import pw.jonak.spyfall.frontend.appState
 import pw.jonak.spyfall.frontend.elements.accessibleBullet
 import pw.jonak.spyfall.frontend.elements.alert
 import pw.jonak.spyfall.frontend.elements.listEntry
-import pw.jonak.spyfall.frontend.getLocalization
 import pw.jonak.spyfall.frontend.leftGameCode
 import pw.jonak.spyfall.frontend.socketClient
 import react.*

@@ -2,9 +2,9 @@ package pw.jonak.spyfall.frontend.elements
 
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
-import pw.jonak.spyfall.frontend.getLocalization
-import pw.jonak.spyfall.frontend.localizationName
-import pw.jonak.spyfall.frontend.localizationOptions
+import pw.jonak.spyfall.frontend.LocalizationInformation.changeLocalization
+import pw.jonak.spyfall.frontend.LocalizationInformation.getLocalization
+import pw.jonak.spyfall.frontend.LocalizationInformation.localizationOptions
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -47,7 +47,7 @@ class Footer : RComponent<RProps, RState>() {
                                     href = ""
                                     onClickFunction = {
                                         it.preventDefault()
-                                        localizationName = localizationOptions[language]!!
+                                        changeLocalization(localizationOptions[language]!!)
                                     }
                                 }
                             }

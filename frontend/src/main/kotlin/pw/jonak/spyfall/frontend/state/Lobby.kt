@@ -2,13 +2,12 @@ package pw.jonak.spyfall.frontend.state
 
 import kotlinx.html.js.onClickFunction
 import pw.jonak.spyfall.common.LobbyInformation
-import pw.jonak.spyfall.common.LobbyInformationRequest
 import pw.jonak.spyfall.common.StartGameRequest
 import pw.jonak.spyfall.common.serialize
+import pw.jonak.spyfall.frontend.LocalizationInformation.getLocalization
 import pw.jonak.spyfall.frontend.appState
 import pw.jonak.spyfall.frontend.elements.accessibleBullet
 import pw.jonak.spyfall.frontend.elements.gameCode
-import pw.jonak.spyfall.frontend.getLocalization
 import pw.jonak.spyfall.frontend.socketClient
 import react.RBuilder
 import react.RComponent
@@ -65,20 +64,12 @@ class Lobby(props: LobbyProps) : RComponent<LobbyProps, RState>(props) {
             }
         }
     }
+
+    private fun startGame(gameCode: String) {
+        socketClient.sendMessage(StartGameRequest(appState.userInfo.userId, gameCode).serialize())
+    }
 }
 
 fun RBuilder.lobby(lobbyInfo: LobbyInformation) = child(Lobby::class) {
     attrs.lobbyInfo = lobbyInfo
-}
-
-fun toLobbyState(gameCode: String) {
-    socketClient.run {
-        if (isConnected) {
-            sendMessage(LobbyInformationRequest(appState.userInfo.userId, gameCode).serialize())
-        }
-    }
-}
-
-fun startGame(gameCode: String) {
-    socketClient.sendMessage(StartGameRequest(appState.userInfo.userId, gameCode).serialize())
 }

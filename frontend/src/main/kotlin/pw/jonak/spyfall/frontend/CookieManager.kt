@@ -3,50 +3,65 @@ package pw.jonak.spyfall.frontend
 import kotlin.browser.document
 import kotlin.js.Date
 
-object CookieManager {
-    fun add(pair: Pair<String, String>, expiry: Date) {
-        document.cookie = pair + ("expires" to expiry.toUTCString()) + "; path=/"
+/**
+ * Manages cookies in the browser idiomatically.
+ */
+@Suppress("RedundantVisibilityModifier")
+public object CookieManager {
+
+    /**
+     * Adds a key-value [pair] to cookies with some [expiry].
+     */
+    public fun add(pair: Pair<String, String>, expiry: Date) {
+        document.cookie = pair.toCookie() + "; " + ("expires" to expiry.toUTCString()).toCookie() + "; path=/"
     }
 
-    fun delete(key: String) {
-        document.cookie = (key to "") + ("expires" to Date().toUTCString()) + "; path=/"
+    /**
+     * Deletes a [key] from the browser's cookie store.
+     */
+    public fun delete(key: String) {
+        document.cookie = (key to "").toCookie() + "; " + ("expires" to Date().toUTCString()).toCookie() + "; path=/"
     }
 
-    operator fun contains(key: String): Boolean {
-        return (key in getCookies()).inlinePrint("$key in cookies? ")
+    /**
+     * Returns true if the [key] is in the cookie store as returned by [getCookies]
+     */
+    public operator fun contains(key: String): Boolean {
+        return key in getCookies()
     }
 
-    operator fun get(key: String): String? {
+    /**
+     * Provides indexed access to cookies.
+     */
+    public operator fun get(key: String): String? {
         return getCookies()[key]
     }
 
-    fun Pair<String, String>.toCookie(): String {
-        return "$first=$second"
-    }
+    /**
+     * Turns a [Pair] into a cookie key-value pair as recognized by JavaScript
+     */
+    private fun Pair<String, String>.toCookie(): String = "$first=$second"
 
-    operator fun Pair<String, String>.plus(other: Pair<String, String>): String {
-        return toCookie() + "; " + other.toCookie()
-    }
-
-    fun deleteAll() {
+    /**
+     * Deletes all cookies from the browser.
+     */
+    public fun deleteAll() {
         getCookies().forEach { (key, _) ->
             delete(key)
         }
     }
 
-    fun getCookies(): Map<String, String> {
-        return document
-                .cookie
-                .split(";")
-                .map { it.trim() }
-                .filter { it.split("=").size == 2 }
-                .filter { it.split("=")[1] != "" }
-                .map { it.split("=")[0] to it.split("=")[1] }
-                .toMap()
-    }
-
-    private fun <T> T.inlinePrint(prefix: String = ""): T {
-        println("$prefix$this")
-        return this
-    }
+    /**
+     * Gets all cookies as a map.
+     * Excludes unset but present cookies.
+     */
+    private fun getCookies(): Map<String, String> =
+        document
+            .cookie
+            .split(";")
+            .map { it.trim() }
+            .filter { it.split("=").size == 2 }
+            .filter { it.split("=")[1] != "" }
+            .map { it.split("=")[0] to it.split("=")[1] }
+            .toMap()
 }

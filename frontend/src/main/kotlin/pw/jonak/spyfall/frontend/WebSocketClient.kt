@@ -10,28 +10,55 @@ typealias MessageHandler = (MessageEvent) -> Unit
 typealias EventHandler = (Event) -> Unit
 typealias CloseHandler = (CloseEvent) -> Unit
 
-const val reconnectInterval = 1000
+private const val reconnectInterval = 1000
 
-class WebSocketClient(val url: String, private val onFirstOpenHandler: EventHandler? = null) {
+/**
+ * Resilient client for [WebSocket]s that reconnects on disconnect, and
+ * is more idiomatic.
+ *
+ * @property url Connect to this server.
+ * @property onFirstOpenHandler Runs this code on the first opening of the server.
+ */
+@Suppress("RedundantVisibilityModifier")
+public class WebSocketClient(val url: String, private val onFirstOpenHandler: EventHandler? = null) {
 
+    /**
+     * The current socket we're using.
+     */
     private lateinit var socket: WebSocket
-    var isFirstConnect = true
 
-    private val nextMessageHandlers: HashSet<MessageHandler> = HashSet()
+    /**
+     * Tracks if this is the first connect; controls
+     * whether [onFirstOpenHandler] is called.
+     */
+    private var isFirstConnect = true
+
+    /** Handlers called when a message is received */
     private val onMessageHandlers: HashSet<MessageHandler> = HashSet()
+
+    /** Handlers called when the connection is opened or re-opened */
     private val onOpenHandlers: HashSet<EventHandler> = HashSet()
+
+    /** Handlers called when the connection is closed */
     private val onCloseHandlers: HashSet<CloseHandler> = HashSet()
+
+    /** Handlers called when the connection is errored */
     private val onErrorHandlers: HashSet<EventHandler> = HashSet()
 
+    /** Messages to be sent when reconnected. */
     private val messagesToSend = HashSet<String>()
 
-    val isConnected: Boolean get() = socket.readyState == 1.toShort()
+    /** Gets if the socket is ready */
+    public val isConnected: Boolean get() = socket.readyState == 1.toShort()
 
     init {
-        open()
+        open() // Open on creation.
     }
 
-    fun open(): WebSocketClient {
+    /**
+     * Closes and reopens the socket.
+     */
+    public fun open(): WebSocketClient {
         if (this::socket.isInitialized) {
             if(socket.readyState == 1.toShort()) {
                 socket.close()
@@ -59,46 +86,58 @@ class WebSocketClient(val url: String, private val onFirstOpenHandler: EventHand
         }
         socket.onmessage = {
             it as MessageEvent
-            val nextMessageHandlerCache = HashSet(nextMessageHandlers)
             onMessageHandlers.forEach { handle -> handle(it) }
-            nextMessageHandlerCache.forEach { handle -> handle(it) }
-            nextMessageHandlers.removeAll(nextMessageHandlerCache)
         }
 
         return this
     }
 
+    /**
+     * Adds an on-open event handler to this [WebSocketClient]
+     */
     fun onOpen(function: EventHandler): WebSocketClient {
         onOpenHandlers.add(function)
         return this
     }
 
+    /**
+     * Adds an on-message event handler to this [WebSocketClient]
+     */
     fun onMessage(function: MessageHandler): WebSocketClient {
         onMessageHandlers.add(function)
         return this
     }
 
+    /**
+     * Adds an on-close event handler to this [WebSocketClient]
+     */
     fun onClose(function: CloseHandler): WebSocketClient {
         onCloseHandlers.add(function)
         return this
     }
 
+    /**
+     * Adds an on-error event handler to this [WebSocketClient]
+     */
     fun onError(function: EventHandler): WebSocketClient {
         onErrorHandlers.add(function)
         return this
     }
 
+    /**
+     * Handles reconnection
+     */
     private fun reconnect(): WebSocketClient {
-        println("Reconnecting in $reconnectInterval ms...")
         window.setTimeout({
-            println("Reconnecting...")
             open()
         }, reconnectInterval)
         return this
     }
 
-    fun sendMessage(message: String): WebSocketClient {
-        println("SENDING: $message")
+    /**
+     * Sends a [message] down the pipe ASAP.
+     */
+    public fun sendMessage(message: String): WebSocketClient {
         if(isConnected) {
             socket.send(message)
         } else {

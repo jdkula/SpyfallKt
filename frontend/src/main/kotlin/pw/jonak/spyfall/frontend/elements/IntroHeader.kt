@@ -1,7 +1,7 @@
 package pw.jonak.spyfall.frontend.elements
 
 import kotlinx.html.SPAN
-import pw.jonak.spyfall.frontend.getLocalization
+import pw.jonak.spyfall.frontend.LocalizationInformation.getLocalization
 import react.RBuilder
 import react.RComponent
 import react.RProps
