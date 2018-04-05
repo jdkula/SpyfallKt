@@ -13,6 +13,9 @@ import react.dom.*
 import kotlin.browser.document
 import kotlin.js.json
 
+/**
+ * The game's footer, displayed at the bottom of all pages.
+ */
 class Footer : RComponent<RProps, RState>() {
     override fun RBuilder.render() {
         div(classes = "footer center-align") {
@@ -62,4 +65,5 @@ class Footer : RComponent<RProps, RState>() {
     }
 }
 
+/** Allows [Footer] to be used from [RBuilder] contexts */
 fun RBuilder.footer() = child(Footer::class) {}

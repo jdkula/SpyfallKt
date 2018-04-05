@@ -8,13 +8,11 @@ package pw.jonak.spyfall.frontend
  * [JOIN] -> The screen where one enters in a game code
  * [LOBBY] -> The screen that shows the current players, game code, and from where you can start/leave the game.
  * [GAME] -> The screen that shows when the game is running.
- * [ADMINMENU] -> TODO remove this.
  */
 enum class ApplicationState {
     LOGIN,
     MAINMENU,
     JOIN,
     LOBBY,
-    GAME,
-    ADMINMENU
+    GAME
 }

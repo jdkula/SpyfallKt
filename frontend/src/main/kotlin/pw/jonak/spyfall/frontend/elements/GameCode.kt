@@ -11,14 +11,25 @@ import react.dom.span
 import kotlin.browser.document
 import kotlin.browser.window
 
+/**
+ * The state of [GameCode]
+ * @property isField Determines if this [GameCode] is in field mode (for copying)
+ */
 interface GameCodeState : RState {
     var isField: Boolean
 }
 
+/**
+ * The properties of [GameCode]
+ * @property gameCode The game code to be displayed
+ */
 interface GameCodeProps : RProps {
     var gameCode: String
 }
 
+/**
+ * Displays a game code, allowing the user to tap-to-copy.
+ */
 class GameCode(props: GameCodeProps) : RComponent<GameCodeProps, GameCodeState>(props) {
 
     override fun GameCodeState.init(props: GameCodeProps) {
@@ -75,6 +86,7 @@ class GameCode(props: GameCodeProps) : RComponent<GameCodeProps, GameCodeState>(
     }
 }
 
+/** Allows you to use [GameCode] from [RBuilder] contexts */
 fun RBuilder.gameCode(code: String) = child(GameCode::class) {
     attrs.gameCode = code
 }

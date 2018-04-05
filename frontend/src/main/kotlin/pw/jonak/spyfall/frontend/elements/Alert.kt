@@ -7,22 +7,22 @@ import react.RProps
 import react.RState
 import react.dom.span
 
+/**
+ * Properties for [Alert]
+ * @property text The text to alert
+ * @property accessibilityOnly true if the alert should only be shown to accessible technology.
+ */
 interface AlertProps : RProps {
     var text: String
-    //var timeout: Int
-    var hidden: Boolean
+    var accessibilityOnly: Boolean
 }
 
+/**
+ * Displays an alert that interrupts screen readers.
+ */
 class Alert(props: AlertProps) : RComponent<AlertProps, RState>(props) {
-
-//    override fun RState.init(props: AlertProps) {
-//        window.setTimeout({
-//            unmountComponentAtNode(findDOMNode(this@Alert).parentElement)
-//        }, props.timeout)
-//    }
-
     override fun RBuilder.render() {
-        span(classes = if (props.hidden) "accessibilityonly" else "") {
+        span(classes = if (props.accessibilityOnly) "accessibilityonly" else "") {
             +props.text
             attrs {
                 role = "alert"
@@ -33,8 +33,8 @@ class Alert(props: AlertProps) : RComponent<AlertProps, RState>(props) {
     }
 }
 
+/** Allows [Alert] to be used from [RBuilder] contexts */
 fun RBuilder.alert(text: String, hidden: Boolean = true) = child(Alert::class) {
     attrs.text = text
-    //attrs.timeout = timeout
-    attrs.hidden = hidden
+    attrs.accessibilityOnly = hidden
 }

@@ -2559,7 +2559,7 @@ $jscomp.polyfill = function (e, r, p, m) {
           width: idealWidth
         };
 
-        // Countainer here will be closest ancestor with overflow: hidden
+        // Countainer here will be closest ancestor with overflow: accessibleOnly
         var closestOverflowParent = this.dropdownEl.offsetParent;
         var alignments = M.checkPossibleAlignments(this.el, closestOverflowParent, dropdownBounds, this.options.coverTrigger ? 0 : triggerBRect.height);
 
@@ -3400,7 +3400,7 @@ $jscomp.polyfill = function (e, r, p, m) {
       }
 
       /**
-       * Find ancestors with overflow: hidden; and make visible
+       * Find ancestors with overflow: accessibleOnly; and make visible
        */
 
     }, {
@@ -6893,7 +6893,7 @@ $jscomp.polyfill = function (e, r, p, m) {
     var content = hiddenDiv.html().replace(/\n/g, '<br>');
     hiddenDiv.html(content);
 
-    // When textarea is hidden, width goes crazy.
+    // When textarea is accessibleOnly, width goes crazy.
     // Approximate with half of window size
 
     if ($textarea[0].offsetWidth > 0 && $textarea[0].offsetHeight > 0) {
@@ -9534,7 +9534,7 @@ $jscomp.polyfill = function (e, r, p, m) {
     return Datepicker;
   }(Component);
 
-  Datepicker._template = ['<div class= "modal datepicker-modal">', '<div class="modal-content datepicker-container">', '<div class="datepicker-date-display">', '<span class="year-text"></span>', '<span class="date-text"></span>', '</div>', '<div class="datepicker-calendar-container">', '<div class="pika-single"></div>', '<div class="datepicker-footer">', '<button class="btn-flat datepicker-clear waves-effect" style="visibility: hidden;" type="button"></button>', '<div class="confirmation-btns">', '<button class="btn-flat datepicker-cancel waves-effect" type="button"></button>', '<button class="btn-flat datepicker-done waves-effect" type="button"></button>', '</div>', '</div>', '</div>', '</div>', '</div>'].join('');
+  Datepicker._template = ['<div class= "modal datepicker-modal">', '<div class="modal-content datepicker-container">', '<div class="datepicker-date-display">', '<span class="year-text"></span>', '<span class="date-text"></span>', '</div>', '<div class="datepicker-calendar-container">', '<div class="pika-single"></div>', '<div class="datepicker-footer">', '<button class="btn-flat datepicker-clear waves-effect" style="visibility: accessibleOnly;" type="button"></button>', '<div class="confirmation-btns">', '<button class="btn-flat datepicker-cancel waves-effect" type="button"></button>', '<button class="btn-flat datepicker-done waves-effect" type="button"></button>', '</div>', '</div>', '</div>', '</div>', '</div>'].join('');
 
   M.Datepicker = Datepicker;
 
@@ -9760,7 +9760,7 @@ $jscomp.polyfill = function (e, r, p, m) {
       key: "_pickerSetup",
       value: function _pickerSetup() {
 
-        var $clearBtn = $('<button class="btn-flat timepicker-clear waves-effect" style="visibility: hidden;" type="button" tabindex="' + (this.options.twelveHour ? '3' : '1') + '">' + this.options.i18n.clear + '</button>').appendTo(this.footer).on('click', this.clear.bind(this));
+        var $clearBtn = $('<button class="btn-flat timepicker-clear waves-effect" style="visibility: accessibleOnly;" type="button" tabindex="' + (this.options.twelveHour ? '3' : '1') + '">' + this.options.i18n.clear + '</button>').appendTo(this.footer).on('click', this.clear.bind(this));
         if (this.options.showClearBtn) {
           $clearBtn.css({ visibility: '' });
         }

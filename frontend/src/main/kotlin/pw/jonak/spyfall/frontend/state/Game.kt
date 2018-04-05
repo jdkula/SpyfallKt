@@ -16,12 +16,25 @@ import kotlin.js.Date
 import kotlin.math.max
 import kotlin.math.round
 
+/**
+ * Properties for [Game]
+ * @property info The current [LobbyInformation]
+ * @property game The current [GameInformation]
+ * @property possibleLocations The current list of locations.
+ */
 interface GameProps : RProps {
     var info: LobbyInformation
     var game: GameInformation
     var possibleLocations: List<String>
 }
 
+/**
+ * The current state of [Game]
+ * @property timeLeft The string representation of the amount of time left in the game.
+ * @property intervalId The handle of the timer update setInterval
+ * @property alertRendered true if the time alert is rendered.
+ * @property gameWasUnpaused true if the game was recently unpaused
+ */
 interface GameState : RState {
     var timeLeft: String
     var intervalId: Int
@@ -29,11 +42,19 @@ interface GameState : RState {
     var gameWasUnpaused: Boolean
 }
 
+/**
+ * The page shown when [ApplicationState.GAME] is the current state.
+ */
 class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
-    fun secondsToMinutes(duration: Int): Int = (duration / 60) % 60
-    fun secondsToSecondsOfMinute(duration: Int): Int = duration % 60
 
-    fun sToTime(duration: Int): String {
+    /** Takes the given [duration] (in seconds since epoch) and gets the minute of the hour */
+    private fun secondsToMinutes(duration: Int): Int = (duration / 60) % 60
+
+    /** Takes the given [duration] (in seconds since epoch) and gets the second of the minute */
+    private fun secondsToSecondsOfMinute(duration: Int): Int = duration % 60
+
+    /** Takes the given [duration] (in seconds since epoch) and retrieves a string value. */
+    private fun sToTime(duration: Int): String {
         val s = secondsToSecondsOfMinute(duration)
         val m = secondsToMinutes(duration)
 
@@ -43,8 +64,13 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
         return "$mstr:$sstr"
     }
 
-    fun getTimeRemaining(inputTime: Double = props.game.pauseTime?.toDouble()
-            ?: (Date().getTime() / 1000)): Int = max(0, -(round(inputTime).toInt() - (props.game.startTime + props.game.gameLength)))
+    /**
+     * Gets the amount of time remaining given an [inputTime] (seconds since epoch), until
+     * the game's end time.
+     */
+    private fun getTimeRemaining(
+            inputTime: Double = props.game.pauseTime?.toDouble() ?: (Date().getTime() / 1000)
+    ): Int = max(0, -(round(inputTime).toInt() - (props.game.startTime + props.game.gameLength)))
 
     override fun GameState.init(props: GameProps) {
         alertRendered = false
@@ -157,10 +183,10 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
                 attrs {
                     onClickFunction = {
                         if (props.game.isPaused) {
-                            unpauseGame(props.info.gameCode)
+                            unpauseGame()
                             state.gameWasUnpaused = true
                         } else {
-                            pauseGame(props.info.gameCode)
+                            pauseGame()
                         }
                     }
                 }
@@ -169,7 +195,7 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
                 +getLocalization("ui", "stop game")
                 attrs {
                     onClickFunction = {
-                        stopGame(props.info.gameCode)
+                        stopGame()
                     }
                 }
             }
@@ -183,43 +209,45 @@ class Game(props: GameProps) : RComponent<GameProps, GameState>(props) {
             }
         }
     }
+
+    /**
+     * Pauses the game by sending a [PauseGameRequest] to the server.
+     */
+    private fun pauseGame() {
+        socketClient.sendMessage(PauseGameRequest(appState.userInfo.userId, props.info.gameCode).serialize())
+    }
+
+    /**
+     * Pauses the game by sending an [UnpauseGameRequest] to the server.
+     */
+    private fun unpauseGame() {
+        socketClient.sendMessage(UnpauseGameRequest(appState.userInfo.userId, props.info.gameCode).serialize())
+    }
+
+    /**
+     * Stops this game by sending a [StopGameRequest] to the server.
+     */
+    private fun stopGame() {
+        socketClient.run {
+            if (isConnected) {
+                sendMessage(StopGameRequest(appState.userInfo.userId, props.info.gameCode).serialize())
+            }
+        }
+    }
 }
 
-
+/** Allows [Game] to be used in [RBuilder] contexts. */
 fun RBuilder.game(info: LobbyInformation, game: GameInformation, possibleLocations: List<String>) = child(Game::class) {
     attrs.info = info
     attrs.game = game
     attrs.possibleLocations = possibleLocations.sorted()
 }
 
-fun toGameState() {
-    socketClient.run {
-        if (isConnected) {
-            appState.currentLobby?.let { lobby ->
-                sendMessage(LocationListRequest().serialize())
-                sendMessage(LobbyInformationRequest(appState.userInfo.userId, lobby.gameCode).serialize())
-            }
-        }
-    }
-}
-
-fun pauseGame(gameCode: String) {
-    socketClient.sendMessage(PauseGameRequest(appState.userInfo.userId, gameCode).serialize())
-}
-
-fun unpauseGame(gameCode: String) {
-    socketClient.sendMessage(UnpauseGameRequest(appState.userInfo.userId, gameCode).serialize())
-}
-
-fun stopGame(gameCode: String) {
-    socketClient.run {
-        if (isConnected) {
-            sendMessage(StopGameRequest(appState.userInfo.userId, gameCode).serialize())
-        }
-    }
-}
-
-fun leaveGame(gameCode: String) {
+/**
+ * Leaves the game by sending a [LeaveGameRequest] to the server, as well as setting [leftGameCode].
+ * Then, goes [toMainMenu].
+ */
+internal fun leaveGame(gameCode: String) {
     socketClient.sendMessage(LeaveGameRequest(appState.userInfo.userId, gameCode).serialize())
     leftGameCode = gameCode
     toMainMenu()

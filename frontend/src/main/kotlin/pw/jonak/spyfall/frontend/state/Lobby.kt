@@ -1,3 +1,5 @@
+@file:Suppress("RedundantVisibilityModifier")
+
 package pw.jonak.spyfall.frontend.state
 
 import kotlinx.html.js.onClickFunction
@@ -15,12 +17,18 @@ import react.RProps
 import react.RState
 import react.dom.*
 
-interface LobbyProps : RProps {
+/** properties for [Lobby] containing the current [LobbyInformation] */
+public interface LobbyProps : RProps {
     var lobbyInfo: LobbyInformation
 }
 
-class Lobby(props: LobbyProps) : RComponent<LobbyProps, RState>(props) {
-    override fun RBuilder.render() {
+/**
+ * The screen for [ApplicationState.LOBBY]. Contains
+ * all users currently present in the lobby, as well
+ * as game start and leave buttons.
+ */
+internal class Lobby(props: LobbyProps) : RComponent<LobbyProps, RState>(props) {
+    public override fun RBuilder.render() {
         span(classes = "accessibilityonly") {
             +getLocalization("ui", "page lobby")
         }
@@ -70,6 +78,7 @@ class Lobby(props: LobbyProps) : RComponent<LobbyProps, RState>(props) {
     }
 }
 
-fun RBuilder.lobby(lobbyInfo: LobbyInformation) = child(Lobby::class) {
+/** Allows the use of [Lobby] in [RBuilder] contexts. */
+internal fun RBuilder.lobby(lobbyInfo: LobbyInformation) = child(Lobby::class) {
     attrs.lobbyInfo = lobbyInfo
 }

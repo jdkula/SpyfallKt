@@ -17,6 +17,10 @@ import react.RState
 import react.dom.*
 import kotlin.browser.document
 
+/**
+ * The screen for [ApplicationState.JOIN].
+ * Allows users to join games.
+ */
 class Join : RComponent<RProps, RState>() {
 
     override fun RBuilder.render() {
@@ -77,23 +81,30 @@ class Join : RComponent<RProps, RState>() {
             }
         }
     }
+
+    private fun joinEvent() {
+        val gameCode = (document.getElementById("gamecode") as? HTMLInputElement)?.value?.trim()
+        println("Found gamecode ${gameCode}")
+        if (gameCode != null && gameCode.isNotEmpty()) {
+            joinGame(gameCode)
+        }
+    }
 }
 
-fun RBuilder.join() = child(Join::class) {}
-fun toJoinState() {
+/** Allows the use of [Join] in [RBuilder] contexts */
+internal fun RBuilder.join() = child(Join::class) {}
+
+/** Shows the [Join] page, resetting [lastGameCodeWasWrong] */
+internal fun toJoinState() {
     lastGameCodeWasWrong = false
     appState = appState.changeState(ApplicationState.JOIN)
 }
 
-fun joinEvent() {
-    val gameCode = (document.getElementById("gamecode") as? HTMLInputElement)?.value?.trim()
-    println("Found gamecode ${gameCode}")
-    if (gameCode != null && gameCode.isNotEmpty()) {
-        joinGame(gameCode)
-    }
-}
-
-fun joinGame(gameCode: String) {
+/**
+ * Joins a new game, setting [leftGameCode] to null
+ * and sending a [LocationListRequest] and [JoinGameRequest] to the server.
+ */
+internal fun joinGame(gameCode: String) {
     leftGameCode = null
     socketClient.run {
         sendMessage(LocationListRequest().serialize())

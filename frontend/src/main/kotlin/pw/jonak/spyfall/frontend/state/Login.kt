@@ -1,3 +1,5 @@
+@file:Suppress("RedundantVisibilityModifier")
+
 package pw.jonak.spyfall.frontend.state
 
 import kotlinx.html.InputType
@@ -17,17 +19,32 @@ import react.RState
 import react.dom.*
 import kotlin.browser.document
 
+/**
+ * The default name placeholder. TODO Remove
+ */
 const val defaultPlaceholder = ""
 
-interface LoginProps : RProps {
+/**
+ * Properties for [Login]
+ * @property name The last name shown. TODO Remove
+ */
+public interface LoginProps : RProps {
     var name: String
 }
 
-class LoginState : RState {
-    lateinit var currentName: String
+/**
+ * The updatable state of [Login]
+ * @property currentName The currently entered name. TODO Remove
+ */
+public interface LoginState : RState {
+    var currentName: String
 }
 
-class Login(props: LoginProps) : RComponent<LoginProps, LoginState>(props) {
+/**
+ * Provides the login page (where users enter their name).
+ * Shown when [appState]'s state is [ApplicationState.LOGIN]
+ */
+internal class Login(props: LoginProps) : RComponent<LoginProps, LoginState>(props) {
     override fun LoginState.init(props: LoginProps) {
         currentName = props.name
     }
@@ -76,36 +93,32 @@ class Login(props: LoginProps) : RComponent<LoginProps, LoginState>(props) {
                 }
             }
         }
-//        br { }
-//        button {
-//            +"Admin Actions"
-//            attrs {
-//                onClickFunction = {
-//                    toAdminMenu()
-//                }
-//            }
-//        }
+    }
+
+    /**
+     * Registers a user with the given [name] by sending a [UserRegistrationRequest] to the server.
+     */
+    private fun register(name: String) {
+        socketClient.run {
+            val message = if (appState.userInfo != dummyUser) {  // TODO Remove this, this never happens.
+                EnsureUserRegistration(appState.userInfo.userId, name, appState.userInfo.sessionId)
+            } else {
+                UserRegistrationRequest(name)
+            }
+            sendMessage(message.serialize())
+        }
     }
 }
 
-
-fun RBuilder.login(placeholderName: String? = null) = child(Login::class) {
+/** Allows rendering the login page in [RBuilder] contexts. */
+internal fun RBuilder.login(placeholderName: String? = null) = child(Login::class) {
     attrs.name = placeholderName ?: defaultPlaceholder
 }
 
-fun register(name: String) {
-    socketClient.run {
-        val message = if (appState.userInfo != dummyUser) {
-            EnsureUserRegistration(appState.userInfo.userId, name, appState.userInfo.sessionId)
-        } else {
-            UserRegistrationRequest(name)
-        }
-        sendMessage(message.serialize())
-        println("Found $name!")
-    }
-}
-
-fun toLoginState() {
+/**
+ * Effectively logs out the user, deleting all previous user info.
+ */
+internal fun toLoginState() {
     CookieManager.delete("userInfo")
     appState = appState.changeUserInfo(dummyUser).changeState(ApplicationState.LOGIN).changeLobby(null).changeLocations(null)
 }

@@ -268,11 +268,6 @@ internal fun updatePage() {
                     }
                 }
             }
-            ADMINMENU -> {  // TODO: Remove this.
-                div {
-                    adminMenu()
-                }
-            }
         }
 
         // If we haven't rendered anything, then display the slider.

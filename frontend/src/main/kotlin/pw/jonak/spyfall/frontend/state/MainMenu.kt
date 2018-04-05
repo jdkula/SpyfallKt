@@ -1,3 +1,5 @@
+@file:Suppress("RedundantVisibilityModifier")
+
 package pw.jonak.spyfall.frontend.state
 
 import kotlinx.html.id
@@ -19,14 +21,21 @@ import react.dom.button
 import react.dom.div
 import react.dom.span
 
-
-interface MainMenuProps : RProps {
+/**
+ * Defines the properties of the [MainMenu]
+ * @property name The name of the logged-in person
+ */
+public interface MainMenuProps : RProps {
     var name: String
 }
 
-class MainMenu(props: MainMenuProps) : RComponent<MainMenuProps, RState>(props) {
+/**
+ * This class represents the main menu (with create and join buttons),
+ * and appears with [ApplicationState.MAINMENU].
+ */
+internal class MainMenu(props: MainMenuProps) : RComponent<MainMenuProps, RState>(props) {
 
-    override fun RBuilder.render() {
+    public override fun RBuilder.render() {
         span(classes = "accessibilityonly") {
             +getLocalization("ui", "page main screen")
         }
@@ -65,18 +74,26 @@ class MainMenu(props: MainMenuProps) : RComponent<MainMenuProps, RState>(props) 
     }
 }
 
-
-fun RBuilder.mainMenu(name: String) = child(MainMenu::class) {
+/**
+ * Returns a [ReactElement] that's a Main Menu with the given [name].
+ */
+internal fun RBuilder.mainMenu(name: String) = child(MainMenu::class) {
     attrs.name = name
 }
 
-fun toMainMenu() {
+/**
+ * Goes to the main menu, deleting the currentLobby cookie and setting [appState]'s currentLobby to null.
+ */
+internal fun toMainMenu() {
     CookieManager.delete("currentLobby")
     appState = appState.changeLobby(null)
     appState = appState.changeState(ApplicationState.MAINMENU)
 }
 
-fun createGame() {
+/**
+ * Creates a game by sending a [CreateGameRequest] and [LocationListRequest] to the server.
+ */
+private fun createGame() {
     socketClient.run {
         sendMessage(LocationListRequest().serialize())
         sendMessage(CreateGameRequest(appState.userInfo.userId).serialize())

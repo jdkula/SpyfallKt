@@ -10,11 +10,17 @@ import react.dom.RDOMBuilder
 import react.dom.div
 import react.dom.span
 
+/**
+ * Properties for the [IntroHeader]
+ * @property before What should be above the header
+ * @property after What should be below the header.
+ */
 interface IntroProps : RProps {
     var before: RDOMBuilder<SPAN>.() -> Unit
     var after: RDOMBuilder<SPAN>.() -> Unit
 }
 
+/** The application's welcome header. */
 class IntroHeader(props: IntroProps) : RComponent<IntroProps, RState>(props) {
     override fun RBuilder.render() {
         div(classes = "row") {
@@ -32,6 +38,7 @@ class IntroHeader(props: IntroProps) : RComponent<IntroProps, RState>(props) {
     }
 }
 
+/** Allows [IntroHeader] to be used from [RBuilder] contexts */
 fun RBuilder.introHeader(before: RDOMBuilder<SPAN>.() -> Unit, after: RDOMBuilder<SPAN>.() -> Unit) = child(IntroHeader::class) {
     attrs.before = before
     attrs.after = after
